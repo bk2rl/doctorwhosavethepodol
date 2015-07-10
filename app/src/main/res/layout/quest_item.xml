@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/quest_body"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:alpha="0.85"
+    android:background="#365196">
+
+    <ImageView
+        android:id="@+id/quest_item_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:background="@android:drawable/ic_menu_compass" />
+
+    <TextView
+        android:id="@+id/quest_item_head_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Quest title"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/quest_item_secondary_text"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@id/quest_item_head_text"
+        android:layout_centerHorizontal="true"
+        android:text="This is short quest about field"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/deadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/quest_item_image"
+        android:text="12:12:12"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/white" />
+
+    <include
+        android:id="@+id/short_task_description"
+        layout="@layout/quest_short_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp" />
+
+</RelativeLayout>

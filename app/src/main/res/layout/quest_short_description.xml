@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/task_item">
+
+    <TableRow>
+
+        <ImageView
+            android:id="@+id/task_short_1"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/favorites"
+            />
+
+        <ImageView
+            android:id="@+id/task_short_2"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/contacts"/>
+
+        <ImageView
+            android:id="@+id/task_short_3"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/map_black"/>
+    </TableRow>
+
+    <TableRow>
+
+        <ImageView
+            android:id="@+id/task_short_4"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/multiplayer"/>
+
+        <ImageView
+            android:id="@+id/task_short_5"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/two"/>
+
+        <ImageView
+            android:id="@+id/task_short_6"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/contacts"/>
+    </TableRow>
+
+    <TableRow>
+
+        <ImageView
+            android:id="@+id/task_short_7"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/contacts"/>
+
+        <ImageView
+            android:id="@+id/task_short_8"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/contacts"/>
+
+        <ImageView
+            android:id="@+id/task_short_9"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/contacts"/>
+    </TableRow>
+</TableLayout>

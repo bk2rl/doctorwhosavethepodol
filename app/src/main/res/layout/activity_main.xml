@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/a222"
+    tools:context=".MainActivity">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/fragmentContainer">
+
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/logo"
+        android:layout_gravity="center" />
+
+    <!--<ProgressBar-->
+        <!--style="?android:attr/progressBarStyleHorizontal"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="10dp"-->
+        <!--android:id="@+id/progressBar"-->
+        <!--android:layout_below="@+id/logo"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="52dp" />-->
+
+        <!--<include-->
+        <!--android:id="@+id/tool_bar"-->
+        <!--layout="@layout/bottom_tool_bar"-->
+        <!--android:layout_gravity="center_horizontal|bottom"-->
+        <!--android:layout_height="?android:attr/actionBarSize"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_alignParentBottom="true" />-->
+
+</RelativeLayout>

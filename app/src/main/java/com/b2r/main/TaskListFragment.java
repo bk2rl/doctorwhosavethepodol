@@ -52,7 +52,7 @@ public class TaskListFragment extends ListFragment {
         }
 
         // TODO: Change Adapter to display your content
-        mAdapter = new TaskListAdapter(mTasks, R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text});
+        mAdapter = new TaskListAdapter(mTasks, R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text, R.id.map_button});
         mFooter = View.inflate(getActivity(),R.layout.task_list_footer,null);
     }
 
@@ -82,16 +82,6 @@ public class TaskListFragment extends ListFragment {
         mListener = null;
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mTasks.add(new Task("Title 0", "Description 0"));
-            }
-        });
-    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -108,7 +98,7 @@ public class TaskListFragment extends ListFragment {
         public void onFragmentInteraction(String id);
     }
 
-    private class TaskListAdapter extends BaseAdapter {
+    private class TaskListAdapter extends BaseAdapter implements View.OnClickListener {
 
         ArrayList<Task> mTasks;
         int mLayoutId;
@@ -142,6 +132,7 @@ public class TaskListFragment extends ListFragment {
             Task task = mTasks.get(position);
             ((TextView)convertView.findViewById(mViewIds[0])).setText(task.getTitle());
             ((TextView)convertView.findViewById(mViewIds[1])).setText(task.getDescription());
+            convertView.findViewById(mViewIds[2]).setOnClickListener(this);
 
             //((ImageView)convertView.findViewById(mViewIds[2])).setImageBitmap(BitmapFactory.decodeFile(quest.imgSrc));
 
@@ -149,6 +140,12 @@ public class TaskListFragment extends ListFragment {
 
             // convertView.setBackgroundColor(quest.backgroundColor);
             return convertView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == mViewIds[2])
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer,new MapFragment()).addToBackStack(null).commit();
         }
     }
 

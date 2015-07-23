@@ -1,0 +1,19 @@
+{
+   "questTitle": "Doctor who",
+   "questDescription": "Save the podol",
+   "tasks": [{
+	   "title": "The Book",
+	   "description": "Book description",
+	   "psk": "Doctor",
+       "isTaskVisible" : true,
+	   "isPlaceVisible": true,  
+	   },
+	   {
+	   "title": "Coat",
+	   "description": "Coat description",
+	   "psk": "River",
+       "isTaskVisible" : true,
+	   "isPlaceVisible": true,  
+	   }
+   ]
+}

@@ -1,59 +1,160 @@
 package com.b2r.main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-class Quest {
-    public Quest(String title, String aboutQuest) {
+public class Quest {
+
+    public enum QuestDifficulty {EASY, NORMAL, HARD}
+
+    public enum QuestMode {SINGLE, MULTIPLAYER}
+
+    private String title;
+    private String shortDescription;
+    private String longDescription;
+    private String questLogoSrc;
+    private String imgSrc;
+
+    private QuestMode questMode;
+    private QuestDifficulty questDifficulty;
+
+    private int progress;
+    private int exp;
+    private int score;
+    private long durationTime;
+    private long startTime;
+
+    private boolean isStarted;
+    private boolean isCurrent;
+    private boolean hasBindToMap;
+    private boolean isFavorite;
+    private boolean hasBindToAgent;
+
+    private ArrayList<Task> taskList;
+
+    public Quest(String title, String shortDescription, String longDescription, String questLogoSrc,
+                 String imgSrc, String questMode, String questDifficulty,
+                 int progress, long durationTime, long startTime, int exp,
+                 boolean isStarted, boolean hasBindToMap, boolean isFavorite, boolean hasBindToAgent,
+                 ArrayList<Task> taskList , int score, boolean isCurrent) {
 
         this.title = title;
-        this.aboutQuest = aboutQuest;
-        this.imgSrc = null;
-        this.progress = 0;
-        this.backgroundColor = 0;
-        this.isFavorite = false;
-        this.hasBindToMap = false;
-        this.hasBindToContacts = false;
-        this.isMultiplayer = false;
-        this.questDifficulty = QuestDifficulty.EASY;
-        this.count = 1;
-        this.questLanguage = QuestLanguage.UKRAINIAN;
-        this.questType = QuestType.USER;
-        this.questReward = QuestReward.EXP;
-        this.questPremiumState = QuestPremiumState.LEGENDARY;
-        taskArrayList = new ArrayList<>();
+        this.shortDescription = shortDescription;
+        this.longDescription = longDescription;
+        this.questLogoSrc = questLogoSrc;
+        this.imgSrc = imgSrc;
+        this.questMode = QuestMode.valueOf(questMode);
+        this.questDifficulty = QuestDifficulty.valueOf(questDifficulty);
+        this.progress = progress;
+        this.durationTime = durationTime;
+        this.startTime = startTime;
+        this.exp = exp;
+        this.isStarted = isStarted;
+        this.hasBindToMap = hasBindToMap;
+        this.isFavorite = isFavorite;
+        this.hasBindToAgent = hasBindToAgent;
+        this.taskList = taskList;
+        this.score = score;
+        this.isCurrent = isCurrent;
     }
 
-    private enum QuestType {USER, B2R, COMMUNITY, FRIEND, COMMERCIAL}
-    private enum QuestDifficulty {EASY, NORMAL, HARD}
-    private enum QuestLanguage {RUSSIAN,UKRAINIAN,ENGLISH}
-    private enum QuestReward {EXP, ACHIEVEMENT}
-    private enum QuestPremiumState {NONE, LEGENDARY}
-
-    public ArrayList<Task> getTaskArrayList() {
-        return taskArrayList;
+    public String getTitle() {
+        return title;
     }
 
-    public void addTask(Task task){
-        taskArrayList.add(task);
+    public String getShortDescription() {
+        return shortDescription;
     }
 
-    private ArrayList<Task> taskArrayList;
+    public String getLongDescription() {
+        return longDescription;
+    }
 
-    String title;
-    String aboutQuest;
-    String imgSrc;
-    byte progress;
-    int backgroundColor;
+    public String getQuestLogoSrc() {
+        return questLogoSrc;
+    }
 
+    public String getImgSrc() {
+        return imgSrc;
+    }
 
-    boolean isFavorite;
-    boolean hasBindToMap;
-    boolean hasBindToContacts;
-    boolean isMultiplayer;
-    QuestDifficulty questDifficulty;
-    int count;
-    QuestLanguage questLanguage;
-    QuestType questType;
-    QuestReward questReward;
-    QuestPremiumState questPremiumState;
+    public QuestMode getQuestMode() {
+        return questMode;
+    }
+
+    public QuestDifficulty getQuestDifficulty() {
+        return questDifficulty;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public long getDurationTime() {
+        return durationTime;
+    }
+
+    public boolean isStarted() {
+        return isStarted;
+    }
+
+    public boolean isHasBindToMap() {
+        return hasBindToMap;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public boolean isHasBindToAgent() {
+        return hasBindToAgent;
+    }
+
+    public ArrayList<Task> getTaskList() {
+        return taskList;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public boolean isCurrent() {
+        return isCurrent;
+    }
+
+    public void setIsCurrent(boolean isCurrent) {
+        this.isCurrent = isCurrent;
+    }
+
+    public void setIsStarted(boolean isStarted) {
+        this.isStarted = isStarted;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public void addProgress(int addProgress){
+        this.progress += addProgress;
+    }
+
+    public void addScore(int addScore){
+        this.score += score;
+    }
 }

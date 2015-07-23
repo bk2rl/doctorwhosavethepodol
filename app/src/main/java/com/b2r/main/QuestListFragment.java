@@ -1,20 +1,21 @@
 package com.b2r.main;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 
-import java.util.AbstractList;
+import com.b2r.main.adapter.QuestListAdapter;
+import com.b2r.main.adapter.QuestListAdapterDB;
+
 import java.util.ArrayList;
 
 
@@ -26,7 +27,8 @@ import java.util.ArrayList;
  * Use the {@link QuestListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class QuestListFragment extends Fragment {
+public class QuestListFragment extends Fragment implements View.OnClickListener,
+        DialogInterface.OnClickListener, ExpandableListView.OnChildClickListener, ExpandableListView.OnGroupClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -37,6 +39,12 @@ public class QuestListFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private QuestListAdapter mAdapter;
+    private EditText pskInput;
+    private ExpandableListView questListView;
+    private View mFooter;
+    private SwipeDetector mSwipeDetector;
+    private MainActivity mActivity;
 
     /**
      * Use this factory method to create a new instance of
@@ -73,33 +81,16 @@ public class QuestListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //View returnView = inflater.inflate(R.layout.quest_list_fragment, container);
-        ListView questListView = new ListView(getActivity());
-        //TODO set quests data on external storage or database
-        ArrayList<Quest> questArrayList = new ArrayList<>();
-        final Quest quest = new Quest(
-                "Doctor Quest", "Save the Podol!"
-        );
-        quest.addTask(new Task("Title 1","Description 1"));
-        quest.addTask(new Task("Title 2","Description 2"));
-        quest.addTask(new Task("Title 3","Description 3"));
-        quest.addTask(new Task("Title 4","Description 4"));
-        questArrayList.add(quest);
-        questListView.setAdapter(new QuestListAdapter(questArrayList, R.layout.quest_item, new int[]{R.id.quest_item_head_text, R.id.quest_item_secondary_text}));
-        questListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, TaskListFragment.newInstance(quest.getTaskArrayList())).addToBackStack(null).commit();
-            }
-        });
-        return questListView;
-    }
+        questListView = new ExpandableListView(getActivity());
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        mActivity = (MainActivity)getActivity();
+        mAdapter = new QuestListAdapter(mActivity, mActivity.getQuests(),
+                R.layout.quest_item, new int[]{R.id.quest_item_head_text, R.id.quest_item_secondary_text, R.id.quest_title_image},
+                R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text, R.id.map_button});
+        mFooter = View.inflate(getActivity(), R.layout.task_list_footer, null);
+        mFooter.findViewById(R.id.enter_code_button).setOnClickListener(this);
+        mSwipeDetector = new SwipeDetector();
+        return questListView;
     }
 
     @Override
@@ -113,70 +104,124 @@ public class QuestListFragment extends Fragment {
         }
     }
 
+    public interface OnFragmentInteractionListener {
+        public void onFragmentInteraction(int id, Bundle args);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        questListView.setAdapter((ExpandableListAdapter) null);
+        questListView.addFooterView(mFooter);
+    }
+
+    @Override
+    public void onStart() {
+        questListView.setAdapter(mAdapter);
+        questListView.setOnTouchListener(mSwipeDetector);
+        questListView.setOnChildClickListener(this);
+        questListView.setOnGroupClickListener(this);
+        super.onStart();
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.enter_code_button) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+            alertDialog.setTitle("PASSWORD");
+            alertDialog.setMessage("Enter Password");
 
-    private class QuestListAdapter extends BaseAdapter {
-
-        ArrayList<Quest> mQuests;
-        int mLayoutId;
-        int[] mViewIds;
-
-        QuestListAdapter(ArrayList<Quest> quests, int layoutId, int[] viewIds) {
-            //TODO: check parametrs count
-            mQuests = quests;
-            mLayoutId = layoutId;
-            mViewIds = viewIds;
-        }
-
-        @Override
-        public int getCount() {
-            return mQuests.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mQuests.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = View.inflate(getActivity(), mLayoutId, null);
-            Quest quest = mQuests.get(position);
-            ((TextView)convertView.findViewById(mViewIds[0])).setText(quest.title);
-            ((TextView)convertView.findViewById(mViewIds[1])).setText(quest.aboutQuest);
-
-            //((ImageView)convertView.findViewById(mViewIds[2])).setImageBitmap(BitmapFactory.decodeFile(quest.imgSrc));
-
-            //((ImageView)convertView.findViewById(mViewIds[3])).setImageResource(R.attr);
-
-           // convertView.setBackgroundColor(quest.backgroundColor);
-            return convertView;
+            pskInput = new EditText(getActivity());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            pskInput.setLayoutParams(lp);
+            alertDialog.setView(pskInput);
+            alertDialog.setIcon(R.drawable.dw_key_1_q48);
+            alertDialog.setPositiveButton("YES", this).setNegativeButton("NO", this);
+            alertDialog.show();
         }
     }
+
+    @Override
+    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+        if (mSwipeDetector.swipeDetected()){
+            if(mSwipeDetector.getAction() == SwipeDetector.Action.RL) {
+                Bundle args = new Bundle();
+                args.putInt(Constants.QUEST_POSITION,groupPosition);
+                args.putInt(Constants.TASK_POSITION,childPosition);
+                mListener.onFragmentInteraction(Constants.SWITCH_TO_MAP,args);
+                return true;
+            } if(mSwipeDetector.getAction() == SwipeDetector.Action.LR) {
+                Bundle args = new Bundle();
+                args.putInt(Constants.QUEST_POSITION,groupPosition);
+                args.putInt(Constants.TASK_POSITION,childPosition);
+                mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK,args);
+                return true;
+            }  if(mSwipeDetector.getAction() == SwipeDetector.Action.TB) {
+                return false;
+            }  if(mSwipeDetector.getAction() == SwipeDetector.Action.BT) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+        return false;
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        ArrayList<Quest> mQuests = mActivity.getQuests();
+        if (DialogInterface.BUTTON_NEGATIVE == which) {
+            dialog.cancel();
+        } else if (DialogInterface.BUTTON_POSITIVE == which) {
+            String password = pskInput.getText().toString();
+            if (password.compareTo("") != 0) {
+                for (int i = 0; i < mQuests.size(); i++) {
+                    final Quest mQuest = mQuests.get(i);
+                    ArrayList<Task> mTasks = mQuest.getTaskList();
+                    for (int j = 0; j < mTasks.size(); j++) {
+                        final Task mTask = mTasks.get(j);
+                        if (mTask.getPskPass().equals(password)) {
+                            mTask.setState(Task.State.PASSED);
+                            mAdapter.notifyDataSetChanged();
+                        } else if (mTask.getPsksUnlock().contains(password)) {
+                            mTask.setTaskVisible(true);
+                            mAdapter.notifyDataSetChanged();
+                        } else if (mTask.getPskBronze().equals(password)) {
+                            mTask.setState(Task.State.BRONZE);
+                            mQuest.addScore(mTask.getBronzeScore());
+                            mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
+                            mQuest.addProgress(360 / mQuests.size());
+                            mAdapter.notifyDataSetChanged();
+                        } else if (mTask.getPskSilver().equals(password)) {
+                            mTask.setState(Task.State.SILVER);
+                            mQuest.addScore(mTask.getSilverScore());
+                            mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
+                            mQuest.addProgress(360 / mQuests.size());
+                            mAdapter.notifyDataSetChanged();
+                        } else if (mTask.getPskGold().equals(password)) {
+                            mTask.setState(Task.State.GOLD);
+                            mQuest.addScore(mTask.getGoldScore());
+                            mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
+                            mQuest.addProgress(360 / mQuests.size());
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 }

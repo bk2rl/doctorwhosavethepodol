@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:avatar="http://schemas.android.com/apk/res-auto"
     android:id="@+id/quest_body"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:alpha="0.85"
     android:background="#365196">
 
-    <ImageView
-        android:id="@+id/quest_item_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+    <com.b2r.main.view.QuestTitleImageView
+        android:id="@+id/quest_title_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical"
-        android:layout_margin="10dp"
-        android:background="@android:drawable/ic_menu_compass" />
+        avatar:stroke_first_color="@color/blue_primary"
+        avatar:stroke_second_color="@color/blue_icons"
+        avatar:stroke_width="4dp"
+        avatar:avatar_asset="dw_quest_icon_01_q120.png"/>
 
     <TextView
         android:id="@+id/quest_item_head_text"
@@ -32,15 +34,6 @@
         android:layout_centerHorizontal="true"
         android:text="This is short quest about field"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/white" />
-
-    <TextView
-        android:id="@+id/deadline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/quest_item_image"
-        android:text="12:12:12"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white" />
 
     <include

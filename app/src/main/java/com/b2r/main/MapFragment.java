@@ -1,6 +1,7 @@
 package com.b2r.main;
 
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -10,17 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.osmdroid.ResourceProxy;
+import org.osmdroid.tileprovider.IRegisterReceiver;
+import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.util.BoundingBoxE6;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.ResourceProxyImpl;
-import org.osmdroid.util.TileSystem;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.Overlay;
-
-import java.util.ArrayList;
 
 
 /**
@@ -30,30 +28,69 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
 
     protected MapView mMapView;
     protected ResourceProxy mResourceProxy;
+    private MainActivity mActivity;
     private ItemizedOverlayWithFocus<OverlayItem> mMyLocationOverlay;
+    private Task centeredTask;
 
     private static final BoundingBoxE6 sPodolBoundingBox;
     private static final Paint sPaint;
 
     static {
         sPodolBoundingBox = new BoundingBoxE6(50.4721542,
-                30.5268927, 50.4580212, 30.4969499);
+                30.5509955, 50.4579884, 30.4969499);
         sPaint = new Paint();
         sPaint.setColor(Color.argb(50, 255, 0, 0));
     }
 
-    private Overlay mShadeAreaOverlay;
+    private static final int zoomMinLevel = 15;
+    private static final int zoomMaxLevel = 18;
 
     public MapFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = (MainActivity) getActivity();
+        if (getArguments() != null) {
+            final int taskPosition = getArguments().getInt(Constants.TASK_POSITION);
+            final int questPosition = getArguments().getInt(Constants.QUEST_POSITION);
+            centeredTask = mActivity.getQuests().get(questPosition).getTaskList().get(taskPosition);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        final Context context = getActivity();
+        final Context applicationContext = context.getApplicationContext();
+        final IRegisterReceiver registerReceiver = new SimpleRegisterReceiver(applicationContext);
+
+        // Create a custom tile source
+//        final ITileSource tileSource = new XYTileSource(
+//                "MapQuest", ResourceProxy.string.mapquest_osm,
+//                zoomMinLevel, zoomMaxLevel,
+//                256,
+//                ".jpg",
+//                new String[]{"http://otile1.mqcdn.com/tiles/1.0.0/osm/",
+//                        "http://otile2.mqcdn.com/tiles/1.0.0/osm/",
+//                        "http://otile3.mqcdn.com/tiles/1.0.0/osm/",
+//                        "http://otile4.mqcdn.com/tiles/1.0.0/osm/"}
+//        );
+//
+
         mResourceProxy = new ResourceProxyImpl(inflater.getContext().getApplicationContext());
-        mMapView = new MapView(inflater.getContext(), TileSystem.getTileSize(), mResourceProxy);
+//        mMapView = new MapView(context, TileSystem.getTileSize(), new DefaultResourceProxyImpl(context), tileProviderArray);
+        mMapView = (MapView) inflater.inflate(R.layout.map_fragment, container, false);
+//        mMapView.setTileSource(tileSource);
+        mMapView.setBuiltInZoomControls(true);
+        mMapView.setMinZoomLevel(zoomMinLevel);
+        mMapView.setMaxZoomLevel(zoomMaxLevel);
+        mMapView.getController().setZoom(zoomMinLevel);
+        mMapView.setMultiTouchControls(true);
+        mMapView.setUseDataConnection(true);
         return mMapView;
     }
 
@@ -61,33 +98,30 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         addOverlays();
-
-        mMapView.setBuiltInZoomControls(true);
-        mMapView.setMultiTouchControls(true);
     }
 
 
     protected void addOverlays() {
-        /* Create a static ItemizedOverlay showing some Markers on various cities. */
-        final ArrayList<OverlayItem> items = new ArrayList<>();
-        items.add(new OverlayItem("Task 1", "Description 1", new GeoPoint(50466618, 30515435)));
-        items.add(new OverlayItem("Task 2", "Description 2", new GeoPoint(50473277, 30517441)));
-        items.add(new OverlayItem("Task 3", "Description 3", new GeoPoint(50468831, 30506122)));
-        items.add(new OverlayItem("Task 4", "Description 4", new GeoPoint(50466186, 30523406)));
 
-        
-        mMyLocationOverlay = new ItemizedOverlayWithFocus<>(items, this, mResourceProxy);
+        mMyLocationOverlay = new ItemizedOverlayWithFocus<>(Task.getMapMarkers(),
+                getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
+                getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
+                getResources().getColor(R.color.blue_primary_light),
+                this, mResourceProxy);
 
         mMyLocationOverlay.setFocusItemsOnTap(true);
-        mMyLocationOverlay.setFocusedItem(0);
+        if (centeredTask.isHasBindToMap()) {
+            mMyLocationOverlay.setFocusedItem(centeredTask.getMapItem());
+        }
 
 
         mMapView.setScrollableAreaLimit(sPodolBoundingBox);
-        mMapView.setMinZoomLevel(15);
-        mMapView.setMaxZoomLevel(18);
-        mMapView.getController().animateTo(sPodolBoundingBox.getCenter());
+        if (centeredTask.isHasBindToMap()) {
+            mMapView.getController().setCenter(centeredTask.getMapItem().getPoint());
+        } else {
+            mMapView.getController().setCenter(sPodolBoundingBox.getCenter());
+        }
 
         mMapView.getOverlays().add(mMyLocationOverlay);
 

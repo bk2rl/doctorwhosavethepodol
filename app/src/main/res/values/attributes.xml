@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="QuestTitleImageView">
+        <attr name="stroke_first_color" format="color"/>
+        <attr name="stroke_second_color" format="color"/>
+        <attr name="stroke_width" format="dimension"/>
+        <attr name="avatar_asset" format="string"/>
+    </declare-styleable>
+</resources>

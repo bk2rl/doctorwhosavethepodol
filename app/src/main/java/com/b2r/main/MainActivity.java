@@ -1,38 +1,182 @@
 package com.b2r.main;
 
 import android.app.Fragment;
-import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.TextView;
 
+import com.b2r.main.database.B2RDB;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 
-public class MainActivity extends ActionBarActivity implements QuestListFragment.OnFragmentInteractionListener, TaskListFragment.OnFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements QuestListFragment.OnFragmentInteractionListener, TaskFragment.OnFragmentInteractionListener,
+ComicsFragment.OnFragmentInteractionListener {
 
-    Fragment[] fragments;
+    private static final String IS_FIRST_LOAD = "is_first_load";
+    private ArrayList<Quest> mQuests;
+    private Timer timer;
+    private Fragment[] fragments;
+    private TextView scoreView;
+    private TextView timeView;
+    private B2RDB mDB;
+    private SharedPreferences sPref;
+    private Quest mCurrentQuest;
+
+    public boolean isFirstLoad() {
+        return firstLoad;
+    }
+
+    public Timer getTimer(){
+        return timer;
+    }
+
+    private boolean firstLoad;
+
+    public B2RDB getDB() {
+        return mDB;
+    }
+
+    public ArrayList<Quest> getQuests() {
+        return mQuests;
+    }
+
+    public TextView getScoreView() {
+        return scoreView;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(Constants.DEBUG, "Main Activity onCreate start");
         setContentView(R.layout.activity_main);
-        fragments = new Fragment[3];
-        fragments[0] = QuestListFragment.newInstance("1", "2");
-        findViewById(R.id.logo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setVisibility(View.INVISIBLE);
-                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[0]).commit();
+        fragments = new Fragment[5];
+        fragments[Constants.QUEST_FRAGMENT_IDX] = QuestListFragment.newInstance("1", "2");
+        fragments[Constants.TASK_FRAGMENT_IDX] = null;
+        fragments[Constants.MAP_FRAGMENT_IDX] = null;
+        fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
+        fragments[Constants.HELP_FRAGMENT_IDX] = null;
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
+        scoreView = (TextView)toolbar.findViewById(R.id.scoreView);
+        timeView = (TextView)toolbar.findViewById(R.id.timeView);
+        setSupportActionBar(toolbar);
+
+//        Log.d(Constants.DEBUG, "Main Activity onCreate db instance");
+//        mDB = new B2RDB(this);
+
+        Log.d(Constants.DEBUG, "Main Activity onStart start");
+//        mDB.open();
+        Log.d(Constants.DEBUG, "Checking for first load");
+        File file = new File(getFilesDir(), "data.json");
+        firstLoad = !file.exists();
+
+        QuestReader questReader;
+        questReader = new QuestReader();
+        try {
+            if (firstLoad) {
+                firstLoad(questReader);
+            } else {
+                defaultLoad(questReader);
             }
-        });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
+        for (Quest quest: mQuests){
+            if (quest.isCurrent()) {
+                scoreView.setText(String.valueOf(quest.getScore()));
+            }
+        }
 
-//        Toolbar toolbar = (Toolbar)findViewById(R.id.tool_bar);
-//        setSupportActionBar(toolbar);
+        Log.d(Constants.DEBUG,"Main Activity onCreate end");
+    }
+
+    private void defaultLoad(QuestReader questReader) throws IOException {
+
+        Log.d(Constants.DEBUG, "MainActivity begin reading from local quest file");
+        mQuests = questReader.readJsonStream(openFileInput("data.json"));
+        Log.d(Constants.DEBUG, "MainActivity end reading from local quest file");
+
+        for (Quest quest:mQuests){
+            if (quest.isCurrent()) {
+                mCurrentQuest = quest;
+            }
+        }
+
+        timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(), timeView);
+
+        if (mCurrentQuest.isStarted()) {
+
+            timer.start();
+
+            Log.d(Constants.DEBUG, "Main Activity QuestList begin fragment transaction");
+            getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.QUEST_FRAGMENT_IDX]).commit();
+            Log.d(Constants.DEBUG, "Main Activity QuestList end fragment transaction");
+
+        } else {
+
+            Log.d(Constants.DEBUG, "Main Activity Comics begin fragment transaction");
+            getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
+            Log.d(Constants.DEBUG, "Main Activity Comics end fragment transaction");
+
+        }
+    }
+
+    private void firstLoad(QuestReader questReader) throws IOException {
+
+        Log.d(Constants.DEBUG, "MainActivity begin reading origin quest file");
+        mQuests = questReader.readJsonStream(getAssets().open("quest.json"));
+        Log.d(Constants.DEBUG, "MainActivity end reading origin quest file");
+
+        for (Quest quest:mQuests){
+            if (quest.isCurrent()) {
+                mCurrentQuest = quest;
+            }
+        }
+
+        timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(),timeView);
+
+        Log.d(Constants.DEBUG, "Main Activity QuestList begin fragment transaction");
+        getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
+        Log.d(Constants.DEBUG, "Main Activity QuestList end fragment transaction");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        QuestWriter writer = null;
+        OutputStream out = null;
+        try {
+            writer = new QuestWriter();
+            out = openFileOutput("data.json", Context.MODE_PRIVATE);
+            writer.writeJsonStream(out, mQuests);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -70,12 +214,22 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onFragmentInteraction(int id, Bundle args) {
+        switch (id) {
+            case Constants.SWITCH_TO_TASK:
+                int questPosition = args.getInt(Constants.QUEST_POSITION);
+                int taskPosition = args.getInt(Constants.TASK_POSITION);
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition,taskPosition)).addToBackStack(null).commit();
+                break;
+            case Constants.SWITCH_TO_MAP:
+                if (fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX] == null)
+                    fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX] = new MapFragment();
+                fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX].setArguments(args);
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX]).addToBackStack(null).commit();
+                break;
+            case Constants.SWITCH_TO_LIST:
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.QUEST_FRAGMENT_IDX]).commit();
+        }
     }
 
-    @Override
-    public void onFragmentInteraction(String id) {
-
-    }
 }

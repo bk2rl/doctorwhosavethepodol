@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:avatar="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/actionBarSize"
-    android:layout_gravity="center_horizontal|bottom"
+    android:layout_gravity="center_horizontal|top"
     android:background="?attr/colorPrimary"
     android:elevation="4dp">
 
@@ -12,21 +13,28 @@
         android:measureWithLargestChild="false">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/imageView" />
-
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/dw_time_watch_01"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeView"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center_vertical"
+            android:text="12:12"/>
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background = "@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_width="32dp"
+            android:layout_marginLeft="10dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/dw_symbol_01"/>
+        <TextView
+            android:id = "@+id/scoreView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center_vertical"
+            android:text="230"/>
 
     </LinearLayout>
 

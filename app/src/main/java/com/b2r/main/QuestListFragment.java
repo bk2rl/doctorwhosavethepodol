@@ -171,7 +171,11 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                 return false;
             }
         }
-        return false;
+        Bundle args = new Bundle();
+        args.putInt(Constants.QUEST_POSITION,groupPosition);
+        args.putInt(Constants.TASK_POSITION,childPosition);
+        mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK,args);
+        return true;
     }
 
     @Override
@@ -193,29 +197,37 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                     for (int j = 0; j < mTasks.size(); j++) {
                         final Task mTask = mTasks.get(j);
                         if (mTask.getPskPass().equals(password)) {
-                            mTask.setState(Task.State.PASSED);
-                            mAdapter.notifyDataSetChanged();
+                            if (mTask.getState() == Task.State.ACTIVE) {
+                                mTask.setState(Task.State.PASSED);
+                                mAdapter.notifyDataSetChanged();
+                            }
                         } else if (mTask.getPsksUnlock().contains(password)) {
                             mTask.setTaskVisible(true);
                             mAdapter.notifyDataSetChanged();
                         } else if (mTask.getPskBronze().equals(password)) {
-                            mTask.setState(Task.State.BRONZE);
-                            mQuest.addScore(mTask.getBronzeScore());
-                            mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
-                            mQuest.addProgress(360 / mQuests.size());
-                            mAdapter.notifyDataSetChanged();
+                            if (mTask.getState() == Task.State.ACTIVE) {
+                                mTask.setState(Task.State.BRONZE);
+                                mQuest.addScore(mTask.getBronzeScore());
+                                mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
+                                mQuest.addProgress(360 / mTasks.size());
+                                mAdapter.notifyDataSetChanged();
+                            }
                         } else if (mTask.getPskSilver().equals(password)) {
-                            mTask.setState(Task.State.SILVER);
-                            mQuest.addScore(mTask.getSilverScore());
-                            mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
-                            mQuest.addProgress(360 / mQuests.size());
-                            mAdapter.notifyDataSetChanged();
+                            if (mTask.getState() == Task.State.ACTIVE) {
+                                mTask.setState(Task.State.SILVER);
+                                mQuest.addScore(mTask.getSilverScore());
+                                mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
+                                mQuest.addProgress(360 / mTasks.size());
+                                mAdapter.notifyDataSetChanged();
+                            }
                         } else if (mTask.getPskGold().equals(password)) {
-                            mTask.setState(Task.State.GOLD);
-                            mQuest.addScore(mTask.getGoldScore());
-                            mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
-                            mQuest.addProgress(360 / mQuests.size());
-                            mAdapter.notifyDataSetChanged();
+                            if (mTask.getState() == Task.State.ACTIVE) {
+                                mTask.setState(Task.State.GOLD);
+                                mQuest.addScore(mTask.getGoldScore());
+                                mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
+                                mQuest.addProgress(360 / mTasks.size());
+                                mAdapter.notifyDataSetChanged();
+                            }
                         }
                     }
                 }

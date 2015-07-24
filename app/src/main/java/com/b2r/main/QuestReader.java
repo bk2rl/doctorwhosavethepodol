@@ -92,7 +92,7 @@ public class QuestReader {
                     durationTime = reader.nextLong();
                     break;
                 case "startTime":
-                    durationTime = reader.nextLong();
+                    startTime = reader.nextLong();
                     break;
                 case "isStarted":
                     isStarted = reader.nextBoolean();

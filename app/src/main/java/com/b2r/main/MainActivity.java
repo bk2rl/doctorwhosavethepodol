@@ -4,7 +4,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -32,40 +35,26 @@ ComicsFragment.OnFragmentInteractionListener {
     private B2RDB mDB;
     private SharedPreferences sPref;
     private Quest mCurrentQuest;
+    private DrawerLayout mDrawerLayout;
 
-    public boolean isFirstLoad() {
-        return firstLoad;
-    }
-
-    public Timer getTimer(){
-        return timer;
-    }
-
-    private boolean firstLoad;
-
-    public B2RDB getDB() {
-        return mDB;
-    }
-
-    public ArrayList<Quest> getQuests() {
-        return mQuests;
-    }
-
-    public TextView getScoreView() {
-        return scoreView;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.DEBUG, "Main Activity onCreate start");
         setContentView(R.layout.activity_main);
-        fragments = new Fragment[5];
+        fragments = new Fragment[6];
         fragments[Constants.QUEST_FRAGMENT_IDX] = QuestListFragment.newInstance("1", "2");
         fragments[Constants.TASK_FRAGMENT_IDX] = null;
         fragments[Constants.MAP_FRAGMENT_IDX] = null;
         fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
         fragments[Constants.HELP_FRAGMENT_IDX] = null;
+
+        mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
+        mDrawerLayout.setDrawerListener(new ActionBarDrawerToggle(
+                this, mDrawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close));
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
         scoreView = (TextView)toolbar.findViewById(R.id.scoreView);
@@ -114,11 +103,10 @@ ComicsFragment.OnFragmentInteractionListener {
             }
         }
 
-        timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(), timeView);
 
         if (mCurrentQuest.isStarted()) {
 
-            timer.start();
+            onFragmentInteraction(Constants.START_TIMER,null);
 
             Log.d(Constants.DEBUG, "Main Activity QuestList begin fragment transaction");
             getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.QUEST_FRAGMENT_IDX]).commit();
@@ -144,8 +132,6 @@ ComicsFragment.OnFragmentInteractionListener {
                 mCurrentQuest = quest;
             }
         }
-
-        timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(),timeView);
 
         Log.d(Constants.DEBUG, "Main Activity QuestList begin fragment transaction");
         getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
@@ -181,9 +167,9 @@ ComicsFragment.OnFragmentInteractionListener {
 
     @Override
     public void onBackPressed() {
-//        if (mDrawerLayout.isDrawerOpen()) {
-//            mDrawerLayout.closeDrawer();
-//        } else
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else
         if (getFragmentManager().getBackStackEntryCount() > 0) {
             getFragmentManager().popBackStack();
         } else {
@@ -229,7 +215,38 @@ ComicsFragment.OnFragmentInteractionListener {
                 break;
             case Constants.SWITCH_TO_LIST:
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.QUEST_FRAGMENT_IDX]).commit();
+                break;
+            case Constants.START_TIMER:
+                timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(), timeView);
+                timer.start();
+                break;
         }
     }
 
+
+    public boolean isFirstLoad() {
+        return firstLoad;
+    }
+
+    public Timer getTimer(){
+        return timer;
+    }
+
+    private boolean firstLoad;
+
+    public B2RDB getDB() {
+        return mDB;
+    }
+
+    public ArrayList<Quest> getQuests() {
+        return mQuests;
+    }
+
+    public TextView getScoreView() {
+        return scoreView;
+    }
+
+    public Quest getCurrentQuest() {
+        return mCurrentQuest;
+    }
 }

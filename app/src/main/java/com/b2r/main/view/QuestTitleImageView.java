@@ -7,9 +7,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.support.annotation.NonNull;
@@ -33,11 +35,18 @@ public class QuestTitleImageView extends android.widget.ImageView {
     private RectF rectF;
     private int sweepAngle;
     private Paint secondPaint;
+    private BitmapShader avatarShader;
 
 
     public QuestTitleImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setCustomAttributes(context, attrs);
+        avatar = new ShapeDrawable(new OvalShape());
+        oval = new ShapeDrawable(new OvalShape());
+        oval.getPaint().setColor(strokeFirstColor);
+        secondPaint = new Paint();
+        secondPaint.setColor(strokeSecondColor);
+        sweepAngle = 0;
     }
 
     //доступны методы для определния высоты и ширины
@@ -67,23 +76,19 @@ public class QuestTitleImageView extends android.widget.ImageView {
     private void setAvatar() {
         InputStream bitmapStream = null;
         try {
-            bitmapStream = getResources().getAssets().open(String.format("user/%s", backgroundImage));
-            Bitmap userImage = BitmapFactory.decodeStream(bitmapStream);
-            userImage = Bitmap.createScaledBitmap(userImage,getWidth()-2*strokeWidth,getHeight()-2*strokeWidth,false);
-
-            BitmapShader shader = new BitmapShader(userImage, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            avatar = new ShapeDrawable(new OvalShape());
-            avatar.getPaint().setShader(shader);
+            if (avatarShader == null) {
+                bitmapStream = getResources().getAssets().open(String.format("user/%s", backgroundImage));
+                Bitmap userImage = BitmapFactory.decodeStream(bitmapStream);
+                userImage = Bitmap.createScaledBitmap(userImage, getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth, false);
+                avatarShader = new BitmapShader(userImage, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            }
+            avatar.getPaint().setShader(avatarShader);
             avatar.getShape().resize(getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth);
             avatar.setBounds(strokeWidth, strokeWidth, getWidth() - strokeWidth, getHeight() - strokeWidth);
 
-            oval = new ShapeDrawable(new OvalShape());
-            oval.getPaint().setColor(strokeFirstColor);
             oval.getShape().resize(getWidth(), getHeight());
 
             rectF = new RectF(0, 0, getWidth(), getHeight());
-            sweepAngle = 0;
-            secondPaint = new Paint(strokeSecondColor);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -99,12 +104,14 @@ public class QuestTitleImageView extends android.widget.ImageView {
 
     public void setProgress(int progress){
         sweepAngle = progress;
+        invalidate();
     }
 
     @Override
     public void onDraw(@NonNull Canvas canvas) {
         oval.draw(canvas);
-        avatar.draw(canvas);
         canvas.drawArc(rectF, -90, sweepAngle, false, secondPaint);
+        avatar.draw(canvas);
     }
+
 }

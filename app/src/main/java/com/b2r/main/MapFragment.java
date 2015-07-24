@@ -19,6 +19,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 
 /**
@@ -29,7 +30,8 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
     protected MapView mMapView;
     protected ResourceProxy mResourceProxy;
     private MainActivity mActivity;
-    private ItemizedOverlayWithFocus<OverlayItem> mMyLocationOverlay;
+    private ItemizedOverlayWithFocus<OverlayItem> mPointsOverlay;
+    private MyLocationNewOverlay mMyLocationOverlay;
     private Task centeredTask;
 
     private static final BoundingBoxE6 sPodolBoundingBox;
@@ -104,15 +106,18 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
 
     protected void addOverlays() {
 
-        mMyLocationOverlay = new ItemizedOverlayWithFocus<>(Task.getMapMarkers(),
+        mMyLocationOverlay = new MyLocationNewOverlay(mActivity,mMapView);
+        mMyLocationOverlay.setDrawAccuracyEnabled(true);
+
+        mPointsOverlay = new ItemizedOverlayWithFocus<>(Task.getMapMarkers(),
                 getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
                 getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
                 getResources().getColor(R.color.blue_primary_light),
                 this, mResourceProxy);
 
-        mMyLocationOverlay.setFocusItemsOnTap(true);
+        mPointsOverlay.setFocusItemsOnTap(true);
         if (centeredTask.isHasBindToMap()) {
-            mMyLocationOverlay.setFocusedItem(centeredTask.getMapItem());
+            mPointsOverlay.setFocusedItem(centeredTask.getMapItem());
         }
 
 
@@ -123,6 +128,8 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
             mMapView.getController().setCenter(sPodolBoundingBox.getCenter());
         }
 
+
+        mMapView.getOverlays().add(mPointsOverlay);
         mMapView.getOverlays().add(mMyLocationOverlay);
 
     }

@@ -13,7 +13,7 @@
         android:layout_height="60dp"
         android:layout_gravity="center_vertical"
         avatar:stroke_first_color="@color/blue_primary"
-        avatar:stroke_second_color="@color/blue_icons"
+        avatar:stroke_second_color="@android:color/white"
         avatar:stroke_width="4dp"
         avatar:avatar_asset="dw_quest_icon_01_q120.png"/>
 

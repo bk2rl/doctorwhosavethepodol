@@ -23,16 +23,25 @@ public class Timer extends Thread {
     public void run() {
         while(true) {
             final long currentTime = GregorianCalendar.getInstance().getTimeInMillis();
-            final long timeLeft = mDurationTime - currentTime - mStartTime;
-            final long seconds = TimeUnit.MILLISECONDS.toSeconds(timeLeft);
-            final long minutes = TimeUnit.MILLISECONDS.toMinutes(timeLeft);
-            final long hours = TimeUnit.MILLISECONDS.toHours(timeLeft);
+            final long timeLeft = mDurationTime - (currentTime - mStartTime);
+            final long seconds = TimeUnit.MILLISECONDS.toSeconds(timeLeft) % 60;
+            final long minutes = TimeUnit.MILLISECONDS.toMinutes(timeLeft) % 60;
+            final long hours = TimeUnit.MILLISECONDS.toHours(timeLeft) % 24;
             mActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mTimeView.setText(String.format("%d:%d:%d", hours, minutes, seconds));
+                    mTimeView.setText(String.format("%d:%02d:%02d", hours, minutes, seconds));
                 }
             });
+            if (timeLeft < 0) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTimeView.setText(String.format("%d:%02d:%02d", 0, 0, 0));
+                    }
+                });
+                break;
+            }
         }
     }
 }

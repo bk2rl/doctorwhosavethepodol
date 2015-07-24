@@ -19,7 +19,6 @@ public class ComicsFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
-    private ArrayList<Quest> mQuests;
     private MainActivity mActivity;
 
     public ComicsFragment() {
@@ -48,17 +47,14 @@ public class ComicsFragment extends Fragment {
         mActivity = ((MainActivity) getActivity());
         View returnView = inflater.inflate(R.layout.comics,container,false);
         Button button = (Button) returnView.findViewById(R.id.start_button);
-        if (mActivity.isFirstLoad()){
+        if (!mActivity.getCurrentQuest().isStarted()){
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mQuests = mActivity.getQuests();
-                    mQuests.get(0).setIsStarted(true);
-                    mQuests.get(0).setStartTime(GregorianCalendar.getInstance().getTimeInMillis());
-                    mActivity.getTimer().start();
-                    //TODO start timer
+                    mActivity.getCurrentQuest().setIsStarted(true);
+                    mActivity.getCurrentQuest().setStartTime(GregorianCalendar.getInstance().getTimeInMillis());
+                    mListener.onFragmentInteraction(Constants.START_TIMER, null);
                     mListener.onFragmentInteraction(Constants.SWITCH_TO_LIST,null);
-                    //TODO switch to QuestListFragment;
                 }
             });
         } else {

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.SimpleCursorTreeAdapter;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -101,6 +102,11 @@ public class QuestListAdapter extends BaseExpandableListAdapter {
         viewHolder.questTitleImageView.setProgress(mQuest.getProgress());
 
         convertView.setBackgroundColor(mResources.getColor(R.color.active));
+
+        if (mQuest.isCurrent()){
+            ((ExpandableListView) parent).expandGroup(groupPosition);
+        }
+
         return convertView;
     }
 

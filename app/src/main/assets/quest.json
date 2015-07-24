@@ -10,7 +10,7 @@
 	  "progress" : 22,
 	  "imgSrc" : "/media/logo/img.src",
 	  "mode" : "SINGLE",
-	  "durationTime" : 7200,
+	  "durationTime" : 7200000,
 	  "isCurrent" : true,
 	  "isStarted" : false,
 	  "exp" : 100,

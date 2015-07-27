@@ -13,12 +13,6 @@
         android:measureWithLargestChild="false">
 
         <ImageView
-            android:id="@+id/up_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/abc_ic_ab_back_mtrl_am_alpha"/>
-
-        <ImageView
             android:layout_width="32dp"
             android:layout_height="match_parent"
             android:src="@drawable/dw_time_watch_01" />

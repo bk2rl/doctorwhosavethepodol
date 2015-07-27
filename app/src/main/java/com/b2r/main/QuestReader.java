@@ -45,17 +45,22 @@ public class QuestReader {
         String questShortDescription = null;
         String questLongDescription = null;
         String questLogoSrc = null;
+        String endText = null;
         int progress = 0;
         int score = 0;
         String imgSrc = null;
         String mode = null;
+        String pskAddTime = null;
         long durationTime = 0;
         long startTime = 0;
+        long addTime = 0;
         boolean isStarted = false;
         int exp = 0;
         boolean hasBindToMap = false;
         boolean isCurrent = false;
+        boolean isEnded = false;
         boolean isFavorite = false;
+        boolean isTimeAdded = false;
         boolean hasBindToAgent = false;
         String difficultyLevel = null;
         ArrayList<Task> taskList = null;
@@ -76,6 +81,9 @@ public class QuestReader {
                 case "questLongDescription":
                     questLongDescription = reader.nextString();
                     break;
+                case "endText":
+                    endText = reader.nextString();
+                    break;
                 case "questLogoSrc":
                     questLogoSrc = reader.nextString();
                     break;
@@ -90,6 +98,15 @@ public class QuestReader {
                     break;
                 case "durationTime":
                     durationTime = reader.nextLong();
+                    break;
+                case "pskAddTime":
+                    pskAddTime = reader.nextString();
+                    break;
+                case "addTime":
+                    addTime = reader.nextLong();
+                    break;
+                case "isTimeAdded":
+                    isTimeAdded = reader.nextBoolean();
                     break;
                 case "startTime":
                     startTime = reader.nextLong();
@@ -118,6 +135,9 @@ public class QuestReader {
                 case "isCurrent":
                     isCurrent = reader.nextBoolean();
                     break;
+                case "isEnded":
+                    isEnded = reader.nextBoolean();
+                    break;
                 case "tasks":
                     taskList = readTaskArray(reader);
                     break;
@@ -129,7 +149,8 @@ public class QuestReader {
         reader.endObject();
         return new Quest(questTitle, questShortDescription, questLongDescription,
                 questLogoSrc, imgSrc,  mode, difficultyLevel, progress, durationTime, startTime,
-                exp, isStarted, hasBindToMap, isFavorite, hasBindToAgent, taskList, score, isCurrent);
+                exp, isStarted, hasBindToMap, isFavorite, hasBindToAgent, taskList, score, isCurrent,
+                endText, isEnded, pskAddTime, addTime, isTimeAdded);
     }
 
     public ArrayList<Task> readTaskArray(JsonReader reader) throws IOException {

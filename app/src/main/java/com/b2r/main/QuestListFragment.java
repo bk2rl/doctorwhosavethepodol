@@ -8,13 +8,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.b2r.main.adapter.QuestListAdapter;
-import com.b2r.main.adapter.QuestListAdapterDB;
 
 import java.util.ArrayList;
 
@@ -83,14 +84,21 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         questListView = new ExpandableListView(getActivity());
 
-        mActivity = (MainActivity)getActivity();
+        mActivity = (MainActivity) getActivity();
         mAdapter = new QuestListAdapter(mActivity, mActivity.getQuests(),
                 R.layout.quest_item, new int[]{R.id.quest_item_head_text, R.id.quest_item_secondary_text, R.id.quest_title_image},
                 R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text, R.id.map_button});
         mFooter = View.inflate(getActivity(), R.layout.task_list_footer, null);
         mFooter.findViewById(R.id.enter_code_button).setOnClickListener(this);
+        if (mActivity.getCurrentQuest().isEnded()) {
+            changeFooterToEndState(mActivity.getCurrentQuest().getEndText());
+        }
         mSwipeDetector = new SwipeDetector();
         return questListView;
+    }
+
+    public void changeFooterToEndState(String endText) {
+        ((Button) mFooter.findViewById(R.id.enter_code_button)).setText(endText);
     }
 
     @Override
@@ -102,6 +110,10 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    public View getFooter() {
+        return mFooter;
     }
 
     public interface OnFragmentInteractionListener {
@@ -134,47 +146,52 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.enter_code_button) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-            alertDialog.setTitle("PASSWORD");
-            alertDialog.setMessage("Enter Password");
+            if (!mActivity.getCurrentQuest().isEnded()) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setTitle("PASSWORD");
+                alertDialog.setMessage("Enter Password");
 
-            pskInput = new EditText(getActivity());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            pskInput.setLayoutParams(lp);
-            alertDialog.setView(pskInput);
-            alertDialog.setIcon(R.drawable.dw_key_1_q48);
-            alertDialog.setPositiveButton("YES", this).setNegativeButton("NO", this);
-            alertDialog.show();
+                pskInput = new EditText(getActivity());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                pskInput.setLayoutParams(lp);
+                alertDialog.setView(pskInput);
+                alertDialog.setIcon(R.drawable.dw_key_1_q48);
+                alertDialog.setPositiveButton("YES", this).setNegativeButton("NO", this);
+                alertDialog.show();
+            }
         }
     }
 
     @Override
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-        if (mSwipeDetector.swipeDetected()){
-            if(mSwipeDetector.getAction() == SwipeDetector.Action.RL) {
+        if (mSwipeDetector.swipeDetected()) {
+            if (mSwipeDetector.getAction() == SwipeDetector.Action.RL) {
                 Bundle args = new Bundle();
-                args.putInt(Constants.QUEST_POSITION,groupPosition);
-                args.putInt(Constants.TASK_POSITION,childPosition);
-                mListener.onFragmentInteraction(Constants.SWITCH_TO_MAP,args);
+                args.putInt(Constants.QUEST_POSITION, groupPosition);
+                args.putInt(Constants.TASK_POSITION, childPosition);
+                mListener.onFragmentInteraction(Constants.SWITCH_TO_MAP, args);
                 return true;
-            } if(mSwipeDetector.getAction() == SwipeDetector.Action.LR) {
+            }
+            if (mSwipeDetector.getAction() == SwipeDetector.Action.LR) {
                 Bundle args = new Bundle();
-                args.putInt(Constants.QUEST_POSITION,groupPosition);
-                args.putInt(Constants.TASK_POSITION,childPosition);
-                mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK,args);
+                args.putInt(Constants.QUEST_POSITION, groupPosition);
+                args.putInt(Constants.TASK_POSITION, childPosition);
+                mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK, args);
                 return true;
-            }  if(mSwipeDetector.getAction() == SwipeDetector.Action.TB) {
+            }
+            if (mSwipeDetector.getAction() == SwipeDetector.Action.TB) {
                 return false;
-            }  if(mSwipeDetector.getAction() == SwipeDetector.Action.BT) {
+            }
+            if (mSwipeDetector.getAction() == SwipeDetector.Action.BT) {
                 return false;
             }
         }
         Bundle args = new Bundle();
-        args.putInt(Constants.QUEST_POSITION,groupPosition);
-        args.putInt(Constants.TASK_POSITION,childPosition);
-        mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK,args);
+        args.putInt(Constants.QUEST_POSITION, groupPosition);
+        args.putInt(Constants.TASK_POSITION, childPosition);
+        mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK, args);
         return true;
     }
 
@@ -191,48 +208,75 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
         } else if (DialogInterface.BUTTON_POSITIVE == which) {
             String password = pskInput.getText().toString();
             if (password.compareTo("") != 0) {
-                for (int i = 0; i < mQuests.size(); i++) {
-                    final Quest mQuest = mQuests.get(i);
-                    ArrayList<Task> mTasks = mQuest.getTaskList();
-                    for (int j = 0; j < mTasks.size(); j++) {
-                        final Task mTask = mTasks.get(j);
-                        if (mTask.getPskPass().equals(password)) {
-                            if (mTask.getState() == Task.State.ACTIVE) {
-                                mTask.setState(Task.State.PASSED);
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        } else if (mTask.getPsksUnlock().contains(password)) {
-                            mTask.setTaskVisible(true);
-                            mAdapter.notifyDataSetChanged();
-                        } else if (mTask.getPskBronze().equals(password)) {
-                            if (mTask.getState() == Task.State.ACTIVE) {
-                                mTask.setState(Task.State.BRONZE);
-                                mQuest.addScore(mTask.getBronzeScore());
-                                mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
-                                mQuest.addProgress(360 / mTasks.size());
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        } else if (mTask.getPskSilver().equals(password)) {
-                            if (mTask.getState() == Task.State.ACTIVE) {
-                                mTask.setState(Task.State.SILVER);
-                                mQuest.addScore(mTask.getSilverScore());
-                                mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
-                                mQuest.addProgress(360 / mTasks.size());
-                                mAdapter.notifyDataSetChanged();
-                            }
-                        } else if (mTask.getPskGold().equals(password)) {
-                            if (mTask.getState() == Task.State.ACTIVE) {
-                                mTask.setState(Task.State.GOLD);
-                                mQuest.addScore(mTask.getGoldScore());
-                                mActivity.getScoreView().setText(Integer.toString(mQuest.getScore()));
-                                mQuest.addProgress(360 / mTasks.size());
-                                mAdapter.notifyDataSetChanged();
-                            }
+                final Quest mQuest = mActivity.getCurrentQuest();
+                ArrayList<Task> mTasks = mQuest.getTaskList();
+                final int taskCount = mTasks.size();
+                for (int j = 0; j < taskCount; j++) {
+                    final Task mTask = mTasks.get(j);
+                    if (mTask.getPskPass().equals(password)) {
+                        if (mTask.getState() == Task.State.ACTIVE) {
+                            updateQuest(Task.State.PASSED, mQuest, mTask, taskCount);
+                        } else {
+                            showToastMessage("Passed key was already putted");
+                        }
+                    } else if (mTask.getPsksUnlock().contains(password)) {
+                        mTask.setTaskVisible(true);
+                        mAdapter.notifyDataSetChanged();
+                    } else if (mTask.getPskBronze().equals(password)) {
+                        if (mTask.getState() == Task.State.ACTIVE) {
+                            updateQuest(Task.State.BRONZE, mQuest, mTask, taskCount);
+                        } else {
+                            showToastMessage("Bronze key was already putted");
+                        }
+                    } else if (mTask.getPskSilver().equals(password)) {
+                        if (mTask.getState() == Task.State.ACTIVE) {
+                            updateQuest(Task.State.SILVER, mQuest, mTask, taskCount);
+                        } else {
+                            showToastMessage("Silver key was already putted");
+                        }
+                    } else if (mTask.getPskGold().equals(password)) {
+                        if (mTask.getState() == Task.State.ACTIVE) {
+                            updateQuest(Task.State.GOLD, mQuest, mTask, taskCount);
+                        } else {
+                            showToastMessage("Gold key was already putted");
                         }
                     }
                 }
+
+                if (mQuest.getProgress() >= 360) {
+                    mListener.onFragmentInteraction(Constants.CHANGE_FOOTER_TO_END_STATE, null);
+                    mListener.onFragmentInteraction(Constants.STOP_TIMER, null);
+                }
+
+                if (mQuest.getPskAddTime().equals(password) && !mQuest.isTimeAdded()){
+                    mQuest.setDurationTime(mQuest.getDurationTime() + mQuest.getAddTime());
+                    mQuest.setIsTimeAdded(true);
+                    mListener.onFragmentInteraction(Constants.START_TIMER,null);
+                }
             }
         }
+    }
+
+    private void showToastMessage(String text) {
+        Toast.makeText(mActivity,text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateQuest(Task.State state, Quest mQuest, Task mTask, int taskCount) {
+        mTask.setState(state);
+        switch (state) {
+            case GOLD:
+                mQuest.addScore(mTask.getGoldScore());
+                break;
+            case SILVER:
+                mQuest.addScore(mTask.getSilverScore());
+                break;
+            case BRONZE:
+                mQuest.addScore(mTask.getBronzeScore());
+                break;
+        }
+        mActivity.getScoreView().setText(String.valueOf(mQuest.getScore()));
+        mQuest.addProgress(360 / taskCount);
+        mAdapter.notifyDataSetChanged();
     }
 
 

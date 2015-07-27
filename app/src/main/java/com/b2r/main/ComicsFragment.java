@@ -12,9 +12,6 @@ import android.widget.Button;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class ComicsFragment extends Fragment {
 
 

@@ -21,14 +21,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends ActionBarActivity implements QuestListFragment.OnFragmentInteractionListener, TaskFragment.OnFragmentInteractionListener,
-ComicsFragment.OnFragmentInteractionListener {
+        ComicsFragment.OnFragmentInteractionListener {
 
     private static final String IS_FIRST_LOAD = "is_first_load";
     private ArrayList<Quest> mQuests;
-    private Timer timer;
+    private Timer timer = null;
     private Fragment[] fragments;
     private TextView scoreView;
     private TextView timeView;
@@ -47,7 +48,7 @@ ComicsFragment.OnFragmentInteractionListener {
         fragments[Constants.QUEST_FRAGMENT_IDX] = QuestListFragment.newInstance("1", "2");
         fragments[Constants.TASK_FRAGMENT_IDX] = null;
         fragments[Constants.MAP_FRAGMENT_IDX] = null;
-        fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
+        fragments[Constants.COMICS_FRAGMENT_IDX] = null;
         fragments[Constants.HELP_FRAGMENT_IDX] = null;
 
         mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
@@ -55,11 +56,11 @@ ComicsFragment.OnFragmentInteractionListener {
                 this, mDrawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close));
 
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
-        scoreView = (TextView)toolbar.findViewById(R.id.scoreView);
-        timeView = (TextView)toolbar.findViewById(R.id.timeView);
+        scoreView = (TextView) toolbar.findViewById(R.id.scoreView);
+        timeView = (TextView) toolbar.findViewById(R.id.timeView);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
 //        Log.d(Constants.DEBUG, "Main Activity onCreate db instance");
 //        mDB = new B2RDB(this);
@@ -78,17 +79,17 @@ ComicsFragment.OnFragmentInteractionListener {
             } else {
                 defaultLoad(questReader);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        for (Quest quest: mQuests){
+        for (Quest quest : mQuests) {
             if (quest.isCurrent()) {
                 scoreView.setText(String.valueOf(quest.getScore()));
             }
         }
 
-        Log.d(Constants.DEBUG,"Main Activity onCreate end");
+        Log.d(Constants.DEBUG, "Main Activity onCreate end");
     }
 
     private void defaultLoad(QuestReader questReader) throws IOException {
@@ -97,7 +98,7 @@ ComicsFragment.OnFragmentInteractionListener {
         mQuests = questReader.readJsonStream(openFileInput("data.json"));
         Log.d(Constants.DEBUG, "MainActivity end reading from local quest file");
 
-        for (Quest quest:mQuests){
+        for (Quest quest : mQuests) {
             if (quest.isCurrent()) {
                 mCurrentQuest = quest;
             }
@@ -106,17 +107,12 @@ ComicsFragment.OnFragmentInteractionListener {
 
         if (mCurrentQuest.isStarted()) {
 
-            onFragmentInteraction(Constants.START_TIMER,null);
-
-            Log.d(Constants.DEBUG, "Main Activity QuestList begin fragment transaction");
-            getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.QUEST_FRAGMENT_IDX]).commit();
-            Log.d(Constants.DEBUG, "Main Activity QuestList end fragment transaction");
+            onFragmentInteraction(Constants.START_TIMER, null);
+            onFragmentInteraction(Constants.SWITCH_TO_LIST, null);
 
         } else {
 
-            Log.d(Constants.DEBUG, "Main Activity Comics begin fragment transaction");
-            getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
-            Log.d(Constants.DEBUG, "Main Activity Comics end fragment transaction");
+            onFragmentInteraction(Constants.SWITCH_TO_COMICS, null);
 
         }
     }
@@ -127,15 +123,13 @@ ComicsFragment.OnFragmentInteractionListener {
         mQuests = questReader.readJsonStream(getAssets().open("quest.json"));
         Log.d(Constants.DEBUG, "MainActivity end reading origin quest file");
 
-        for (Quest quest:mQuests){
+        for (Quest quest : mQuests) {
             if (quest.isCurrent()) {
                 mCurrentQuest = quest;
             }
         }
 
-        Log.d(Constants.DEBUG, "Main Activity QuestList begin fragment transaction");
-        getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
-        Log.d(Constants.DEBUG, "Main Activity QuestList end fragment transaction");
+        onFragmentInteraction(Constants.SWITCH_TO_COMICS, null);
     }
 
     @Override
@@ -169,8 +163,7 @@ ComicsFragment.OnFragmentInteractionListener {
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
+        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
             getFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
@@ -205,7 +198,7 @@ ComicsFragment.OnFragmentInteractionListener {
             case Constants.SWITCH_TO_TASK:
                 int questPosition = args.getInt(Constants.QUEST_POSITION);
                 int taskPosition = args.getInt(Constants.TASK_POSITION);
-                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition,taskPosition)).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition, taskPosition)).addToBackStack(null).commit();
                 break;
             case Constants.SWITCH_TO_MAP:
                 if (fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX] == null)
@@ -216,11 +209,46 @@ ComicsFragment.OnFragmentInteractionListener {
             case Constants.SWITCH_TO_LIST:
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.QUEST_FRAGMENT_IDX]).commit();
                 break;
+            case Constants.SWITCH_TO_COMICS:
+                if (fragments[Constants.COMICS_FRAGMENT_IDX] == null)
+                    fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
+                break;
             case Constants.START_TIMER:
+                if (timer != null){
+                    timer.interrupt();
+                }
                 timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(), timeView);
                 timer.start();
                 break;
+            case Constants.STOP_TIMER:
+                if (timer != null){
+                    timer.interrupt();
+                    long timeLeft = mCurrentQuest.getDurationTime() -
+                            (GregorianCalendar.getInstance().getTimeInMillis() - mCurrentQuest.getStartTime());
+                    mCurrentQuest.addScore((int) (0.1*(1-timeLeft/mCurrentQuest.getDurationTime())));
+                    scoreView.setText(String.valueOf(mCurrentQuest.getScore()));
+                }
+                break;
         }
+    }
+
+    public boolean onFragmentInteraction(int id){
+        switch (id){
+            case Constants.CHANGE_FOOTER_TO_END_STATE:
+                if (fragments[Constants.QUEST_FRAGMENT_IDX] != null) {
+                    if (((QuestListFragment) fragments[Constants.QUEST_FRAGMENT_IDX]).getFooter() != null) {
+                        mCurrentQuest.setIsEnded(true);
+                        ((QuestListFragment) fragments[Constants.QUEST_FRAGMENT_IDX]).changeFooterToEndState(mCurrentQuest.getEndText());
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+        }
+        return false;
     }
 
 
@@ -228,7 +256,7 @@ ComicsFragment.OnFragmentInteractionListener {
         return firstLoad;
     }
 
-    public Timer getTimer(){
+    public Timer getTimer() {
         return timer;
     }
 

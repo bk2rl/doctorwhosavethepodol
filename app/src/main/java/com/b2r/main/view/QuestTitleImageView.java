@@ -110,7 +110,7 @@ public class QuestTitleImageView extends android.widget.ImageView {
     @Override
     public void onDraw(@NonNull Canvas canvas) {
         oval.draw(canvas);
-        canvas.drawArc(rectF, -90, sweepAngle, false, secondPaint);
+        canvas.drawArc(rectF, -90, sweepAngle, true, secondPaint);
         avatar.draw(canvas);
     }
 

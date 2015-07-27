@@ -38,6 +38,7 @@ public class QuestWriter {
         writer.name("questTitle").value(mQuest.getTitle());
         writer.name("questShortDescription").value(mQuest.getShortDescription());
         writer.name("questLongDescription").value(mQuest.getLongDescription());
+        writer.name("endText").value(mQuest.getEndText());
         writer.name("questLogoSrc").value(mQuest.getQuestLogoSrc());
         writer.name("progress").value(mQuest.getProgress());
         writer.name("imgSrc").value(mQuest.getImgSrc());
@@ -45,12 +46,16 @@ public class QuestWriter {
         writer.name("durationTime").value(mQuest.getDurationTime());
         writer.name("startTime").value(mQuest.getStartTime());
         writer.name("isStarted").value(mQuest.isStarted());
+        writer.name("pskAddTime").value(mQuest.getPskAddTime());
+        writer.name("addTime").value(mQuest.getAddTime());
+        writer.name("isTimeAdded").value(mQuest.isTimeAdded());
         writer.name("exp").value(mQuest.getExp());
         writer.name("hasBindToMap").value(mQuest.isHasBindToMap());
         writer.name("hasBindToAgent").value(mQuest.isHasBindToAgent());
         writer.name("isFavorite").value(mQuest.isFavorite());
         writer.name("difficultyLevel").value(mQuest.getQuestDifficulty().name());
         writer.name("score").value(mQuest.getScore());
+        writer.name("isEnded").value(mQuest.isEnded());
         writer.name("isCurrent").value(mQuest.isCurrent());
         writer.name("tasks");
         writeTaskArray(writer, mQuest.getTaskList());

@@ -2,14 +2,20 @@ package com.b2r.main;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.b2r.main.database.TaskCursorEnvalop;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class TaskFragment extends Fragment {
@@ -39,7 +45,7 @@ public class TaskFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mActivity = (MainActivity)getActivity();
+        mActivity = (MainActivity) getActivity();
 
         if (getArguments() != null) {
             mQuestPosition = getArguments().getInt(Constants.QUEST_POSITION);
@@ -52,7 +58,7 @@ public class TaskFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View convertView = inflater.inflate(R.layout.task_layout,container,false);
+        View convertView = inflater.inflate(R.layout.task_layout, container, false);
         switch (mTask.getState()) {
             case ACTIVE:
                 convertView.setBackgroundColor(getResources().getColor(R.color.active));
@@ -70,8 +76,24 @@ public class TaskFragment extends Fragment {
                 convertView.setBackgroundColor(getResources().getColor(R.color.gold));
                 break;
         }
-        ((TextView)convertView.findViewById(R.id.task_title)).setText(mTask.getTitle());
-        ((TextView)convertView.findViewById(R.id.task_long_description)).setText(mTask.getLongDescription());
+
+        ((TextView) convertView.findViewById(R.id.task_title)).setText(mTask.getTitle());
+        ((TextView) convertView.findViewById(R.id.task_long_description)).setText(mTask.getLongDescription());
+        InputStream bitmapStream = null;
+        try {
+            bitmapStream = getResources().getAssets().open(String.format("help/%s", mTask.getImgSrc()));
+            Bitmap userImage = BitmapFactory.decodeStream(bitmapStream);
+            ((ImageView) convertView.findViewById(R.id.help_image)).setImageBitmap(userImage);
+        } catch (IOException ignored) {
+        } finally {
+            try {
+                if (bitmapStream != null) {
+                    bitmapStream.close();
+                }
+            } catch (IOException ignored) {
+            }
+        }
+
         return convertView;
     }
 
@@ -92,8 +114,6 @@ public class TaskFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
-
 
 
     public interface OnFragmentInteractionListener {

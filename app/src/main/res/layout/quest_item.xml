@@ -29,7 +29,7 @@
     <TextView
         android:id="@+id/quest_item_secondary_text"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/quest_item_head_text"
         android:layout_centerHorizontal="true"
         android:text="This is short quest about field"

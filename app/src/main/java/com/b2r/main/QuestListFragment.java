@@ -118,6 +118,7 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
 
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction(int id, Bundle args);
+        public boolean onFragmentInteraction(int id);
     }
 
     @Override
@@ -243,8 +244,10 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                     }
                 }
 
-                if (mQuest.getProgress() >= 360) {
-                    mListener.onFragmentInteraction(Constants.CHANGE_FOOTER_TO_END_STATE, null);
+                if (mQuest.getProgress() >= (360/taskCount)*taskCount) {
+                    mQuest.setProgress(360);
+                    mAdapter.notifyDataSetChanged();
+                    mListener.onFragmentInteraction(Constants.CHANGE_FOOTER_TO_END_STATE);
                     mListener.onFragmentInteraction(Constants.STOP_TIMER, null);
                 }
 

@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.b2r.main.database.B2RDB;
@@ -37,6 +39,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
     private SharedPreferences sPref;
     private Quest mCurrentQuest;
     private DrawerLayout mDrawerLayout;
+    private ImageView comicButton;
 
 
     @Override
@@ -59,6 +62,13 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
         scoreView = (TextView) toolbar.findViewById(R.id.scoreView);
         timeView = (TextView) toolbar.findViewById(R.id.timeView);
+        comicButton = (ImageView) toolbar.findViewById(R.id.comicButton);
+        comicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFragmentInteraction(Constants.SWITCH_TO_COMICS_WITH_BACKSTACK,null);
+            }
+        });
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -107,7 +117,9 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
 
         if (mCurrentQuest.isStarted()) {
 
-            onFragmentInteraction(Constants.START_TIMER, null);
+            if (!mCurrentQuest.isEnded()) {
+                onFragmentInteraction(Constants.START_TIMER, null);
+            }
             onFragmentInteraction(Constants.SWITCH_TO_LIST, null);
 
         } else {
@@ -214,6 +226,11 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
                     fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
                 break;
+            case Constants.SWITCH_TO_COMICS_WITH_BACKSTACK:
+                if (fragments[Constants.COMICS_FRAGMENT_IDX] == null)
+                    fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).addToBackStack(null).commit();
+                break;
             case Constants.START_TIMER:
                 if (timer != null){
                     timer.interrupt();
@@ -226,7 +243,9 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
                     timer.interrupt();
                     long timeLeft = mCurrentQuest.getDurationTime() -
                             (GregorianCalendar.getInstance().getTimeInMillis() - mCurrentQuest.getStartTime());
-                    mCurrentQuest.addScore((int) (0.1*(1-timeLeft/mCurrentQuest.getDurationTime())));
+                    mCurrentQuest.addScore((int) (200*(1-timeLeft/mCurrentQuest.getDurationTime())));
+                    mCurrentQuest.setIsEnded(true);
+                    timeView.setText(String.format("%d:%02d:%02d", 0, 0, 0));
                     scoreView.setText(String.valueOf(mCurrentQuest.getScore()));
                 }
                 break;

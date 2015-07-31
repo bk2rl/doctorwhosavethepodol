@@ -12,6 +12,7 @@ public class Constants {
     public static final int SWITCH_TO_LIST = 2;
     public static final int START_TIMER = 3;
     public static final int SWITCH_TO_COMICS = 4;
+    public static final int SWITCH_TO_COMICS_WITH_BACKSTACK = 6;
     public static final int STOP_TIMER = 5;
     public static final int CHANGE_FOOTER_TO_END_STATE = 6;
     public final static String TASK_ITEM = "task_item";

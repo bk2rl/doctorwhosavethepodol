@@ -7,12 +7,13 @@
     android:background="?attr/colorPrimary"
     android:elevation="4dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:measureWithLargestChild="false">
 
         <ImageView
+            android:id = "@+id/watchImg"
             android:layout_width="32dp"
             android:layout_height="match_parent"
             android:src="@drawable/dw_time_watch_01" />
@@ -23,13 +24,21 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="0:00:00"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/watchImg"
+            android:layout_toEndOf="@+id/watchImg" />
 
         <ImageView
+            android:id = "@+id/scoreImg"
             android:layout_width="32dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:src="@drawable/dw_symbol_01" />
+            android:src="@drawable/dw_symbol_01"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/timeView"
+            android:layout_toEndOf="@+id/timeView"
+            android:layout_marginLeft="27dp"
+            android:layout_marginStart="27dp" />
 
         <TextView
             android:id="@+id/scoreView"
@@ -37,8 +46,21 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="0"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/scoreImg"
+            android:layout_toEndOf="@+id/scoreImg" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/comicButton"
+            android:src="@drawable/comicshop"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:textColor="@android:color/white"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>

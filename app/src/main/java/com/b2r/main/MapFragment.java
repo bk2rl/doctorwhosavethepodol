@@ -10,11 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.ResourceProxy;
 import org.osmdroid.tileprovider.IRegisterReceiver;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.ResourceProxyImpl;
+import org.osmdroid.util.TileSystem;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
@@ -31,7 +35,6 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
     protected ResourceProxy mResourceProxy;
     private MainActivity mActivity;
     private ItemizedOverlayWithFocus<OverlayItem> mPointsOverlay;
-    private MyLocationNewOverlay mMyLocationOverlay;
     private Task centeredTask;
 
     private static final BoundingBoxE6 sPodolBoundingBox;
@@ -46,6 +49,7 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
 
     private static final int zoomMinLevel = 15;
     private static final int zoomMaxLevel = 18;
+    private View mFragmentView;
 
     public MapFragment() {
         // Required empty public constructor
@@ -71,29 +75,30 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
         final IRegisterReceiver registerReceiver = new SimpleRegisterReceiver(applicationContext);
 
         // Create a custom tile source
-//        final ITileSource tileSource = new XYTileSource(
-//                "MapQuest", ResourceProxy.string.mapquest_osm,
-//                zoomMinLevel, zoomMaxLevel,
-//                256,
-//                ".jpg",
-//                new String[]{"http://otile1.mqcdn.com/tiles/1.0.0/osm/",
-//                        "http://otile2.mqcdn.com/tiles/1.0.0/osm/",
-//                        "http://otile3.mqcdn.com/tiles/1.0.0/osm/",
-//                        "http://otile4.mqcdn.com/tiles/1.0.0/osm/"}
-//        );
+        final ITileSource tileSource = new XYTileSource(
+                "MapQuest", ResourceProxy.string.mapquest_osm,
+                zoomMinLevel, zoomMaxLevel,
+                256,
+                ".jpg",
+                new String[]{"http://otile1.mqcdn.com/tiles/1.0.0/osm/",
+                        "http://otile2.mqcdn.com/tiles/1.0.0/osm/",
+                        "http://otile3.mqcdn.com/tiles/1.0.0/osm/",
+                        "http://otile4.mqcdn.com/tiles/1.0.0/osm/"}
+        );
 //
 
         mResourceProxy = new ResourceProxyImpl(inflater.getContext().getApplicationContext());
 //        mMapView = new MapView(context, TileSystem.getTileSize(), new DefaultResourceProxyImpl(context), tileProviderArray);
-        mMapView = (MapView) inflater.inflate(R.layout.map_fragment, container, false);
-//        mMapView.setTileSource(tileSource);
+        mFragmentView = inflater.inflate(R.layout.map_fragment, container, false);
+        mMapView = (MapView) mFragmentView.findViewById(R.id.mapview);
+        mMapView.setTileSource(tileSource);
         mMapView.setBuiltInZoomControls(true);
         mMapView.setMinZoomLevel(zoomMinLevel);
         mMapView.setMaxZoomLevel(zoomMaxLevel);
         mMapView.getController().setZoom(zoomMinLevel);
         mMapView.setMultiTouchControls(true);
         mMapView.setUseDataConnection(true);
-        return mMapView;
+        return mFragmentView;
     }
 
 
@@ -106,8 +111,6 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
 
     protected void addOverlays() {
 
-        mMyLocationOverlay = new MyLocationNewOverlay(mActivity,mMapView);
-        mMyLocationOverlay.setDrawAccuracyEnabled(true);
 
         mPointsOverlay = new ItemizedOverlayWithFocus<>(Task.getMapMarkers(),
                 getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
@@ -130,7 +133,6 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
 
 
         mMapView.getOverlays().add(mPointsOverlay);
-        mMapView.getOverlays().add(mMyLocationOverlay);
 
     }
 

@@ -3,6 +3,7 @@ package com.b2r.main.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -11,6 +12,8 @@ import android.widget.SimpleCursorTreeAdapter;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
+import com.b2r.main.Constants;
+import com.b2r.main.MainActivity;
 import com.b2r.main.Quest;
 import com.b2r.main.R;
 import com.b2r.main.Task;
@@ -111,7 +114,7 @@ public class QuestListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
         ViewChildHolder holder;
         Task mTask = mQuests.get(groupPosition).getTaskList().get(childPosition);
@@ -151,7 +154,18 @@ public class QuestListAdapter extends BaseExpandableListAdapter {
             }
 
             if (!mTask.isHasBindToMap()) holder.mapIcon.setVisibility(View.GONE);
-            else holder.mapIcon.setVisibility(View.VISIBLE);
+            else {
+                holder.mapIcon.setVisibility(View.VISIBLE);
+                holder.mapIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Bundle args = new Bundle();
+                        args.putInt(Constants.QUEST_POSITION, groupPosition);
+                        args.putInt(Constants.TASK_POSITION, childPosition);
+                        ((MainActivity)mContext).onFragmentInteraction(Constants.SWITCH_TO_MAP, args);
+                    }
+                });
+            }
         } else {
             convertView = View.inflate(mContext, R.layout.row_null, null);
         }

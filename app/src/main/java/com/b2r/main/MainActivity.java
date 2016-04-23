@@ -243,7 +243,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
                     timer.interrupt();
                     long timeLeft = mCurrentQuest.getDurationTime() -
                             (GregorianCalendar.getInstance().getTimeInMillis() - mCurrentQuest.getStartTime());
-                    mCurrentQuest.addScore((int) (200*(1-timeLeft/mCurrentQuest.getDurationTime())));
+                    mCurrentQuest.addScore((int)TimeUnit.MILLISECONDS.toMinutes(timeLeft));
                     mCurrentQuest.setIsEnded(true);
                     timeView.setText(String.format("%d:%02d:%02d", 0, 0, 0));
                     scoreView.setText(String.valueOf(mCurrentQuest.getScore()));

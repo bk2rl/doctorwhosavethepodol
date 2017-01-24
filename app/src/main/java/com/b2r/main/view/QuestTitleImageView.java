@@ -7,11 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.support.annotation.NonNull;
@@ -30,20 +28,20 @@ public class QuestTitleImageView extends android.widget.ImageView {
     private int strokeSecondColor;
     private int strokeWidth;
     private String backgroundImage;
-    private ShapeDrawable avatar;
-    private ShapeDrawable oval;
-    private RectF rectF;
+    private ShapeDrawable backgroundDrawable;
+    private ShapeDrawable progressBarDrawable;
+    private RectF progressRectangle;
     private int sweepAngle;
     private Paint secondPaint;
-    private BitmapShader avatarShader;
+    private BitmapShader backgroundShader;
 
 
     public QuestTitleImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setCustomAttributes(context, attrs);
-        avatar = new ShapeDrawable(new OvalShape());
-        oval = new ShapeDrawable(new OvalShape());
-        oval.getPaint().setColor(strokeFirstColor);
+        backgroundDrawable = new ShapeDrawable(new OvalShape());
+        progressBarDrawable = new ShapeDrawable(new OvalShape());
+        progressBarDrawable.getPaint().setColor(strokeFirstColor);
         secondPaint = new Paint();
         secondPaint.setColor(strokeSecondColor);
         sweepAngle = 0;
@@ -53,7 +51,7 @@ public class QuestTitleImageView extends android.widget.ImageView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        setAvatar();
+        prepareDrawables();
     }
 
     private void setCustomAttributes(Context context, AttributeSet attrs) {
@@ -73,22 +71,25 @@ public class QuestTitleImageView extends android.widget.ImageView {
 
 
     //call after view is layouted
-    private void setAvatar() {
+    private void prepareDrawables() {
         InputStream bitmapStream = null;
         try {
-            if (avatarShader == null) {
+            if (backgroundShader == null) {
                 bitmapStream = getResources().getAssets().open(String.format("user/%s", backgroundImage));
                 Bitmap userImage = BitmapFactory.decodeStream(bitmapStream);
                 userImage = Bitmap.createScaledBitmap(userImage, getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth, false);
-                avatarShader = new BitmapShader(userImage, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+//                userImage = Bitmap.createScaledBitmap(userImage, getWidth(), getHeight(), false);
+                backgroundShader = new BitmapShader(userImage, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             }
-            avatar.getPaint().setShader(avatarShader);
-            avatar.getShape().resize(getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth);
-            avatar.setBounds(strokeWidth, strokeWidth, getWidth() - strokeWidth, getHeight() - strokeWidth);
 
-            oval.getShape().resize(getWidth(), getHeight());
+            backgroundDrawable.getPaint().setShader(backgroundShader);
+            backgroundDrawable.getShape().resize(getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth);
+            backgroundDrawable.setBounds(strokeWidth, strokeWidth, getWidth() - strokeWidth, getHeight() - strokeWidth);
 
-            rectF = new RectF(0, 0, getWidth(), getHeight());
+            progressBarDrawable.getShape().resize(getWidth(), getHeight());
+
+            progressRectangle = new RectF(0, 0, getWidth(), getHeight());
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -109,9 +110,9 @@ public class QuestTitleImageView extends android.widget.ImageView {
 
     @Override
     public void onDraw(@NonNull Canvas canvas) {
-        oval.draw(canvas);
-        canvas.drawArc(rectF, -90, sweepAngle, true, secondPaint);
-        avatar.draw(canvas);
+        progressBarDrawable.draw(canvas);
+        canvas.drawArc(progressRectangle, -90, sweepAngle, true, secondPaint);
+        backgroundDrawable.draw(canvas);
     }
 
 }

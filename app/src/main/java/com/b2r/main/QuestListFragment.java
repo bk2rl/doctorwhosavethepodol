@@ -83,6 +83,7 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         questListView = new ExpandableListView(getActivity());
+        questListView.setGroupIndicator(null);
 
         mActivity = (MainActivity) getActivity();
         mAdapter = new QuestListAdapter(mActivity, mActivity.getQuests(),

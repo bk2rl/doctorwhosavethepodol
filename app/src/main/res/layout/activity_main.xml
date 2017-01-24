@@ -31,10 +31,11 @@
     <LinearLayout
         android:id="@+id/drawer_content"
         android:layout_width="300dp"
+        android:layout_marginTop="?android:attr/actionBarSize"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@android:color/black"
-        android:alpha="0.85"
+        android:alpha="0.95"
         android:orientation="vertical">
 
 

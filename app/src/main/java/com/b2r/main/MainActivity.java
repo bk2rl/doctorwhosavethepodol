@@ -3,6 +3,7 @@ package com.b2r.main;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.b2r.main.database.B2RDB;
+import com.balysv.materialmenu.MaterialMenuDrawable;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +43,8 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
     private Quest mCurrentQuest;
     private DrawerLayout mDrawerLayout;
     private ImageView comicButton;
+    private ImageView menuIconView;
+    private MaterialMenuDrawable materialMenuDrawable;
 
 
     @Override
@@ -55,11 +60,44 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         fragments[Constants.HELP_FRAGMENT_IDX] = null;
 
         mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
-        mDrawerLayout.setDrawerListener(new ActionBarDrawerToggle(
-                this, mDrawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close));
+        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener(){
+            public boolean isDrawerOpened;
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                materialMenuDrawable.setTransformationOffset(
+                        MaterialMenuDrawable.AnimationState.BURGER_ARROW,
+                        isDrawerOpened ? 2 - slideOffset : slideOffset
+                );
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                isDrawerOpened = true;
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                isDrawerOpened = false;
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if(newState == DrawerLayout.STATE_IDLE) {
+                    if(isDrawerOpened) {
+                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.ARROW);
+                    } else {
+                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.BURGER);
+                    }
+                }
+            }
+        });
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
+
+        materialMenuDrawable = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.REGULAR);
+
         scoreView = (TextView) toolbar.findViewById(R.id.scoreView);
         timeView = (TextView) toolbar.findViewById(R.id.timeView);
         comicButton = (ImageView) toolbar.findViewById(R.id.comicButton);
@@ -69,8 +107,15 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
                 onFragmentInteraction(Constants.SWITCH_TO_COMICS_WITH_BACKSTACK,null);
             }
         });
+
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        toolbar.setNavigationIcon(materialMenuDrawable);
 
 //        Log.d(Constants.DEBUG, "Main Activity onCreate db instance");
 //        mDB = new B2RDB(this);
@@ -175,6 +220,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+            materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.BURGER);
         } else if (getFragmentManager().getBackStackEntryCount() > 0) {
             getFragmentManager().popBackStack();
         } else {

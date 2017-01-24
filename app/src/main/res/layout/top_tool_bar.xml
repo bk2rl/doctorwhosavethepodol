@@ -13,14 +13,6 @@
         android:measureWithLargestChild="false">
 
         <ImageView
-            android:id="@+id/menuImg"
-            android:layout_width="32dp"
-            android:layout_height="match_parent"
-            android:layout_marginRight="20dp"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/menu" />
-
-        <ImageView
             android:id="@+id/watchImg"
             android:layout_width="32dp"
             android:layout_height="match_parent"

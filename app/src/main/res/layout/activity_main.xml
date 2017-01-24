@@ -28,13 +28,13 @@
     </RelativeLayout>
 
     <!-- The navigation drawer -->
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/drawer_content"
         android:layout_width="300dp"
         android:layout_marginTop="?android:attr/actionBarSize"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/black"
+        android:background="@color/blue_primary_dark"
         android:alpha="0.95"
         android:orientation="vertical">
 
@@ -83,15 +83,15 @@
         </RelativeLayout>
 
         <!-- List of Actions (pages) -->
-        <ListView
+        <ExpandableListView
+            android:layout_marginLeft="10dp"
             android:id="@+id/navList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/profileBox"
-            android:choiceMode="singleChoice"
-            android:background="@color/blue_primary_dark" />
+            android:choiceMode="singleChoice" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.v4.widget.DrawerLayout>

@@ -8,16 +8,16 @@ import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.b2r.main.adapter.NavigationDrawerListAdapter;
 import com.b2r.main.database.B2RDB;
 import com.balysv.materialmenu.MaterialMenuDrawable;
 
@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
     private Quest mCurrentQuest;
     private DrawerLayout mDrawerLayout;
     private ImageView comicButton;
-    private ImageView menuIconView;
+    private ExpandableListView drawerListView;
     private MaterialMenuDrawable materialMenuDrawable;
 
 
@@ -58,40 +58,6 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         fragments[Constants.MAP_FRAGMENT_IDX] = null;
         fragments[Constants.COMICS_FRAGMENT_IDX] = null;
         fragments[Constants.HELP_FRAGMENT_IDX] = null;
-
-        mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
-        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener(){
-            public boolean isDrawerOpened;
-
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                materialMenuDrawable.setTransformationOffset(
-                        MaterialMenuDrawable.AnimationState.BURGER_ARROW,
-                        isDrawerOpened ? 2 - slideOffset : slideOffset
-                );
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                isDrawerOpened = true;
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                isDrawerOpened = false;
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-                if(newState == DrawerLayout.STATE_IDLE) {
-                    if(isDrawerOpened) {
-                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.ARROW);
-                    } else {
-                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.BURGER);
-                    }
-                }
-            }
-        });
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
@@ -144,7 +110,59 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
             }
         }
 
+        setNavigationDrawer();
+
         Log.d(Constants.DEBUG, "Main Activity onCreate end");
+    }
+
+    private void setNavigationDrawer() {
+
+        mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
+        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener(){
+            public boolean isDrawerOpened;
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                materialMenuDrawable.setTransformationOffset(
+                        MaterialMenuDrawable.AnimationState.BURGER_ARROW,
+                        isDrawerOpened ? 2 - slideOffset : slideOffset
+                );
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                isDrawerOpened = true;
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                isDrawerOpened = false;
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if(newState == DrawerLayout.STATE_IDLE) {
+                    if(isDrawerOpened) {
+                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.ARROW);
+                    } else {
+                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.BURGER);
+                    }
+                }
+            }
+        });
+
+        ArrayList<NavigationDrawerMenuItem> navigationDrawerMenuItems = new ArrayList<>();
+        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.passwords)).setDrawableResource(R.drawable.key));
+        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_app)).setDrawableResource(R.drawable.information));
+        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_us)).setDrawableResource(R.drawable.contacts_2));
+
+        int groupTo[]= {R.id.navigation_drawer_menu_item_title_text,R.id.navigation_drawer_menu_item_image};
+        int childTo[] = {R.id.navigation_drawer_menu_child_item_title_text, R.id.navigation_drawer_menu_child_item_password};
+
+        drawerListView = (ExpandableListView) findViewById(R.id.navList);
+        drawerListView.setGroupIndicator(null);
+        drawerListView.setAdapter(new NavigationDrawerListAdapter(this, navigationDrawerMenuItems, mCurrentQuest.getTaskList(),R.layout.navigation_drawer_menu_item_group_layout, groupTo,
+                R.layout.navigation_drawer_menu_item_child_layout,childTo));
     }
 
     private void defaultLoad(QuestReader questReader) throws IOException {

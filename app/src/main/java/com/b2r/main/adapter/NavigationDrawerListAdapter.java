@@ -2,22 +2,17 @@ package com.b2r.main.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.b2r.main.Constants;
-import com.b2r.main.MainActivity;
 import com.b2r.main.NavigationDrawerMenuItem;
-import com.b2r.main.Task;
 import com.b2r.main.R;
+import com.b2r.main.Task;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 
 public class NavigationDrawerListAdapter extends BaseExpandableListAdapter {

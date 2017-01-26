@@ -16,9 +16,7 @@
             android:id="@+id/watchImg"
             android:layout_width="32dp"
             android:layout_height="match_parent"
-            android:layout_toEndOf="@+id/menuImg"
-            android:layout_toRightOf="@+id/menuImg"
-            android:src="@drawable/dw_time_watch_01" />
+            android:src="@drawable/dw_time_watch_03_sq32" />
 
         <TextView
             android:id="@+id/timeView"
@@ -26,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="3dp"
             android:layout_toEndOf="@+id/watchImg"
             android:layout_toRightOf="@+id/watchImg"
             android:text="0:00:00"
@@ -40,7 +39,7 @@
             android:layout_marginStart="27dp"
             android:layout_toEndOf="@+id/timeView"
             android:layout_toRightOf="@+id/timeView"
-            android:src="@drawable/dw_symbol_01" />
+            android:src="@drawable/dw_symbol_01_sq32" />
 
         <TextView
             android:id="@+id/scoreView"
@@ -55,13 +54,13 @@
 
         <ImageView
             android:id="@+id/comicButton"
-            android:layout_width="48dp"
+            android:layout_width="32dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginTop="20dp"
-            android:src="@drawable/comicshop"
+            android:src="@drawable/dwucq_comics_icon_sq32"
             android:textColor="@android:color/white" />
 
     </RelativeLayout>

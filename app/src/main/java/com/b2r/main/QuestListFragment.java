@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -152,14 +153,13 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                 alertDialog.setTitle("PASSWORD");
                 alertDialog.setMessage("Enter Password");
-
                 pskInput = new EditText(getActivity());
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
                 pskInput.setLayoutParams(lp);
                 alertDialog.setView(pskInput);
-                alertDialog.setIcon(R.drawable.dw_key_1_q48);
+                alertDialog.setIcon(R.drawable.blue_key);
                 alertDialog.setPositiveButton("YES", this).setNegativeButton("NO", this);
                 alertDialog.show();
             }

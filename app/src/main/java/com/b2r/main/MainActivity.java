@@ -153,8 +153,8 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
 
         ArrayList<NavigationDrawerMenuItem> navigationDrawerMenuItems = new ArrayList<>();
         navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.passwords)).setDrawableResource(R.drawable.key));
-        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_app)).setDrawableResource(R.drawable.information));
-        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_us)).setDrawableResource(R.drawable.contacts_2));
+        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_app)).setDrawableResource(R.drawable.about_app));
+        navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_us)).setDrawableResource(R.drawable.about_bk2rl));
 
         int groupTo[]= {R.id.navigation_drawer_menu_item_title_text,R.id.navigation_drawer_menu_item_image};
         int childTo[] = {R.id.navigation_drawer_menu_child_item_title_text, R.id.navigation_drawer_menu_child_item_password};

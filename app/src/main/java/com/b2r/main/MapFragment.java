@@ -1,29 +1,31 @@
 package com.b2r.main;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.ResourceProxy;
 import org.osmdroid.tileprovider.IRegisterReceiver;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.ResourceProxyImpl;
-import org.osmdroid.util.TileSystem;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 
 /**
@@ -31,6 +33,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
  */
 public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemGestureListener<OverlayItem> {
 
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
     protected MapView mMapView;
     protected ResourceProxy mResourceProxy;
     private MainActivity mActivity;
@@ -70,35 +73,33 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final Context context = getActivity();
-        final Context applicationContext = context.getApplicationContext();
-        final IRegisterReceiver registerReceiver = new SimpleRegisterReceiver(applicationContext);
-
-        // Create a custom tile source
-        final ITileSource tileSource = new XYTileSource(
-                "MapQuest", ResourceProxy.string.mapquest_osm,
-                zoomMinLevel, zoomMaxLevel,
-                256,
-                ".jpg",
-                new String[]{"http://otile1.mqcdn.com/tiles/1.0.0/osm/",
-                        "http://otile2.mqcdn.com/tiles/1.0.0/osm/",
-                        "http://otile3.mqcdn.com/tiles/1.0.0/osm/",
-                        "http://otile4.mqcdn.com/tiles/1.0.0/osm/"}
-        );
-//
-
-        mResourceProxy = new ResourceProxyImpl(inflater.getContext().getApplicationContext());
-//        mMapView = new MapView(context, TileSystem.getTileSize(), new DefaultResourceProxyImpl(context), tileProviderArray);
         mFragmentView = inflater.inflate(R.layout.map_fragment, container, false);
+        mResourceProxy = new ResourceProxyImpl(inflater.getContext().getApplicationContext());
         mMapView = (MapView) mFragmentView.findViewById(R.id.mapview);
-        mMapView.setTileSource(tileSource);
+
+
+        if (ContextCompat.checkSelfPermission(mActivity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(mActivity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        } else {
+            setTileSource();
+        }
+
+        mMapView.setUseDataConnection(true);
         mMapView.setBuiltInZoomControls(true);
         mMapView.setMinZoomLevel(zoomMinLevel);
         mMapView.setMaxZoomLevel(zoomMaxLevel);
         mMapView.getController().setZoom(zoomMinLevel);
         mMapView.setMultiTouchControls(true);
-        mMapView.setUseDataConnection(true);
         return mFragmentView;
+    }
+
+    private void setTileSource() {
+        mMapView.setTileSource(TileSourceFactory.MAPNIK);
     }
 
 
@@ -110,11 +111,9 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
 
 
     protected void addOverlays() {
-
-
         mPointsOverlay = new ItemizedOverlayWithFocus<>(Task.getMapMarkers(),
-                getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
-                getResources().getDrawable(R.drawable.dw_map_marker_1blue_q48),
+                getResources().getDrawable(R.drawable.map_marker),
+                getResources().getDrawable(R.drawable.map_marker),
                 getResources().getColor(R.color.blue_primary_light),
                 this, mResourceProxy);
 
@@ -144,5 +143,20 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
     @Override
     public boolean onItemLongPress(int index, OverlayItem item) {
         return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setTileSource();
+                }
+                return;
+            }
+
+        }
     }
 }

@@ -1,6 +1,9 @@
-package com.b2r.main;
+package com.b2r.main.ui;
 
 import android.widget.TextView;
+
+import com.b2r.main.Constants;
+import com.b2r.main.ui.activity.MainActivity;
 
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +28,11 @@ public class Timer extends Thread {
     public void run() {
         if (!mActivity.getCurrentQuest().isEnded()) {
             while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (isInterrupted()) {
                     return;
                 } else {

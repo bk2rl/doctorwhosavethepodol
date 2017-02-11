@@ -1,4 +1,4 @@
-package com.b2r.main.adapter;
+package com.b2r.main.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -8,9 +8,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.b2r.main.NavigationDrawerMenuItem;
+import com.b2r.main.model.NavigationDrawerMenuItem;
 import com.b2r.main.R;
-import com.b2r.main.Task;
+import com.b2r.main.model.Task;
 
 import java.util.ArrayList;
 

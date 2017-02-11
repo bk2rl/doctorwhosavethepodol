@@ -1,4 +1,4 @@
-package com.b2r.main.view;
+package com.b2r.main.ui.view;
 
 
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.b2r.main;
+package com.b2r.main.ui;
 
 import android.util.Log;
 import android.view.MotionEvent;

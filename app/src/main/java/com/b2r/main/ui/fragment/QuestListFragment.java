@@ -1,69 +1,44 @@
-package com.b2r.main;
+package com.b2r.main.ui.fragment;
 
+import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.b2r.main.adapter.QuestListAdapter;
+import com.b2r.main.Constants;
+import com.b2r.main.R;
+import com.b2r.main.model.Quest;
+import com.b2r.main.model.Task;
+import com.b2r.main.ui.SwipeDetector;
+import com.b2r.main.ui.activity.MainActivity;
+import com.b2r.main.ui.adapter.QuestListAdapter;
 
 import java.util.ArrayList;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link QuestListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link QuestListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class QuestListFragment extends Fragment implements View.OnClickListener,
-        DialogInterface.OnClickListener, ExpandableListView.OnChildClickListener, ExpandableListView.OnGroupClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+        DialogInterface.OnClickListener {
 
     private OnFragmentInteractionListener mListener;
     private QuestListAdapter mAdapter;
     private EditText pskInput;
-    private ExpandableListView questListView;
-    private View mFooter;
+    private RecyclerView questListView;
     private SwipeDetector mSwipeDetector;
     private MainActivity mActivity;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment QuestListFragment.
-     */
-
-    // TODO: Rename and change types and number of parameters
-    public static QuestListFragment newInstance(String param1, String param2) {
+    public static QuestListFragment newInstance() {
         QuestListFragment fragment = new QuestListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -74,33 +49,27 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        questListView = new ExpandableListView(getActivity());
-        questListView.setGroupIndicator(null);
+        questListView = new RecyclerView(getActivity());
+        questListView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        questListView.setLayoutManager(new LinearLayoutManager(mActivity));
 
         mActivity = (MainActivity) getActivity();
         mAdapter = new QuestListAdapter(mActivity, mActivity.getQuests(),
-                R.layout.quest_item, new int[]{R.id.quest_item_head_text, R.id.quest_item_secondary_text, R.id.quest_title_image},
+                R.layout.quest_item, new int[]{R.id.quest_item_head_text, R.id.quest_item_secondary_text, R.id.quest_title_image, R.id.task_list},
                 R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text, R.id.map_button});
-        mFooter = View.inflate(getActivity(), R.layout.task_list_footer, null);
-        mFooter.findViewById(R.id.enter_code_button).setOnClickListener(this);
-        if (mActivity.getCurrentQuest().isEnded()) {
-            changeFooterToEndState(mActivity.getCurrentQuest().getEndText());
-        }
+
+        mActivity.getFloatingActionButton().setVisibility(View.VISIBLE);
+        mActivity.getFloatingActionButton().setImageDrawable(getResources().getDrawable(R.drawable.key));
+        mActivity.getFloatingActionButton().setSize(FloatingActionButton.SIZE_NORMAL);
+        mActivity.getFloatingActionButton().setOnClickListener(this);
+
         mSwipeDetector = new SwipeDetector();
         return questListView;
-    }
-
-    public void changeFooterToEndState(String endText) {
-        ((Button) mFooter.findViewById(R.id.enter_code_button)).setText(endText);
     }
 
     @Override
@@ -114,28 +83,25 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    public View getFooter() {
-        return mFooter;
-    }
-
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction(int id, Bundle args);
+
         public boolean onFragmentInteraction(int id);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        questListView.setAdapter((ExpandableListAdapter) null);
-        questListView.addFooterView(mFooter);
+        questListView.setAdapter((QuestListAdapter) null);
+//        questListView.addFooterView(mFooter);
     }
 
     @Override
     public void onStart() {
         questListView.setAdapter(mAdapter);
         questListView.setOnTouchListener(mSwipeDetector);
-        questListView.setOnChildClickListener(this);
-        questListView.setOnGroupClickListener(this);
+//        questListView.setOnChildClickListener(this);
+//        questListView.setOnGroupClickListener(this);
         super.onStart();
     }
 
@@ -145,10 +111,15 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
         mListener = null;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mActivity.getFloatingActionButton().setVisibility(View.GONE);
+    }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.enter_code_button) {
+        if (v.getId() == R.id.floating_action_button) {
             if (!mActivity.getCurrentQuest().isEnded()) {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                 alertDialog.setTitle("PASSWORD");
@@ -166,41 +137,6 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
         }
     }
 
-    @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-        if (mSwipeDetector.swipeDetected()) {
-            if (mSwipeDetector.getAction() == SwipeDetector.Action.RL) {
-                Bundle args = new Bundle();
-                args.putInt(Constants.QUEST_POSITION, groupPosition);
-                args.putInt(Constants.TASK_POSITION, childPosition);
-                mListener.onFragmentInteraction(Constants.SWITCH_TO_MAP, args);
-                return true;
-            }
-            if (mSwipeDetector.getAction() == SwipeDetector.Action.LR) {
-                Bundle args = new Bundle();
-                args.putInt(Constants.QUEST_POSITION, groupPosition);
-                args.putInt(Constants.TASK_POSITION, childPosition);
-                mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK, args);
-                return true;
-            }
-            if (mSwipeDetector.getAction() == SwipeDetector.Action.TB) {
-                return false;
-            }
-            if (mSwipeDetector.getAction() == SwipeDetector.Action.BT) {
-                return false;
-            }
-        }
-        Bundle args = new Bundle();
-        args.putInt(Constants.QUEST_POSITION, groupPosition);
-        args.putInt(Constants.TASK_POSITION, childPosition);
-        mListener.onFragmentInteraction(Constants.SWITCH_TO_TASK, args);
-        return true;
-    }
-
-    @Override
-    public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-        return false;
-    }
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
@@ -245,24 +181,24 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                     }
                 }
 
-                if (mQuest.getProgress() >= (360/taskCount)*taskCount) {
+                if (mQuest.getProgress() >= (360 / taskCount) * taskCount) {
                     mQuest.setProgress(360);
                     mAdapter.notifyDataSetChanged();
                     mListener.onFragmentInteraction(Constants.CHANGE_FOOTER_TO_END_STATE);
                     mListener.onFragmentInteraction(Constants.STOP_TIMER, null);
                 }
 
-                if (mQuest.getPskAddTime().equals(password) && !mQuest.isTimeAdded()){
+                if (mQuest.getPskAddTime().equals(password) && !mQuest.isTimeAdded()) {
                     mQuest.setDurationTime(mQuest.getDurationTime() + mQuest.getAddTime());
                     mQuest.setIsTimeAdded(true);
-                    mListener.onFragmentInteraction(Constants.START_TIMER,null);
+                    mListener.onFragmentInteraction(Constants.START_TIMER, null);
                 }
             }
         }
     }
 
     private void showToastMessage(String text) {
-        Toast.makeText(mActivity,text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, text, Toast.LENGTH_SHORT).show();
     }
 
     private void updateQuest(Task.State state, Quest mQuest, Task mTask, int taskCount) {

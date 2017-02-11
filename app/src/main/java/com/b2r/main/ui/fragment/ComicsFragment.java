@@ -1,4 +1,4 @@
-package com.b2r.main;
+package com.b2r.main.ui.fragment;
 
 
 import android.app.Activity;
@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import java.util.ArrayList;
+import com.b2r.main.Constants;
+import com.b2r.main.ui.activity.MainActivity;
+import com.b2r.main.R;
+
 import java.util.GregorianCalendar;
 
 public class ComicsFragment extends Fragment {
@@ -48,7 +51,7 @@ public class ComicsFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mActivity.getCurrentQuest().setIsStarted(true);
+                    mActivity.getCurrentQuest().setQuestStarted(true);
                     mActivity.getCurrentQuest().setStartTime(GregorianCalendar.getInstance().getTimeInMillis());
                     mListener.onFragmentInteraction(Constants.START_TIMER, null);
                     mListener.onFragmentInteraction(Constants.SWITCH_TO_LIST,null);

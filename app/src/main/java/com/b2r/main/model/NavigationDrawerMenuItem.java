@@ -1,4 +1,4 @@
-package com.b2r.main;
+package com.b2r.main.model;
 
 public class NavigationDrawerMenuItem {
     private int drawableResource;

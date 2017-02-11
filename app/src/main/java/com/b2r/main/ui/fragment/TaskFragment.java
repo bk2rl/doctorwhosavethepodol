@@ -1,4 +1,4 @@
-package com.b2r.main;
+package com.b2r.main.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -12,7 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.b2r.main.database.TaskCursorEnvalop;
+import com.b2r.main.Constants;
+import com.b2r.main.ui.activity.MainActivity;
+import com.b2r.main.R;
+import com.b2r.main.model.Task;
 
 import java.io.IOException;
 import java.io.InputStream;

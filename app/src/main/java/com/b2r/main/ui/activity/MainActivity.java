@@ -1,13 +1,13 @@
-package com.b2r.main;
+package com.b2r.main.ui.activity;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -17,8 +17,19 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.b2r.main.adapter.NavigationDrawerListAdapter;
-import com.b2r.main.database.B2RDB;
+import com.b2r.main.Constants;
+import com.b2r.main.model.NavigationDrawerMenuItem;
+import com.b2r.main.model.Quest;
+import com.b2r.main.ui.fragment.QuestListFragment;
+import com.b2r.main.model.QuestReader;
+import com.b2r.main.model.QuestWriter;
+import com.b2r.main.R;
+import com.b2r.main.ui.Timer;
+import com.b2r.main.ui.adapter.NavigationDrawerListAdapter;
+import com.b2r.main.ui.fragment.ComicsFragment;
+import com.b2r.main.ui.fragment.HintFragment;
+import com.b2r.main.ui.fragment.MapFragment;
+import com.b2r.main.ui.fragment.TaskFragment;
 import com.balysv.materialmenu.MaterialMenuDrawable;
 
 import java.io.File;
@@ -29,22 +40,21 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 
-public class MainActivity extends ActionBarActivity implements QuestListFragment.OnFragmentInteractionListener, TaskFragment.OnFragmentInteractionListener,
-        ComicsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements QuestListFragment.OnFragmentInteractionListener, TaskFragment.OnFragmentInteractionListener,
+        ComicsFragment.OnFragmentInteractionListener, HintFragment.OnFragmentInteractionListener {
 
-    private static final String IS_FIRST_LOAD = "is_first_load";
     private ArrayList<Quest> mQuests;
     private Timer timer = null;
     private Fragment[] fragments;
     private TextView scoreView;
     private TextView timeView;
-    private B2RDB mDB;
-    private SharedPreferences sPref;
     private Quest mCurrentQuest;
     private DrawerLayout mDrawerLayout;
+    private FloatingActionButton floatingActionButton;
     private ImageView comicButton;
     private ExpandableListView drawerListView;
     private MaterialMenuDrawable materialMenuDrawable;
+    private boolean firstLoad;
 
 
     @Override
@@ -52,25 +62,25 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         super.onCreate(savedInstanceState);
         Log.d(Constants.DEBUG, "Main Activity onCreate start");
         setContentView(R.layout.activity_main);
-        fragments = new Fragment[6];
-        fragments[Constants.QUEST_FRAGMENT_IDX] = QuestListFragment.newInstance("1", "2");
+        fragments = new Fragment[7];
+        fragments[Constants.QUEST_FRAGMENT_IDX] = QuestListFragment.newInstance();
         fragments[Constants.TASK_FRAGMENT_IDX] = null;
         fragments[Constants.MAP_FRAGMENT_IDX] = null;
         fragments[Constants.COMICS_FRAGMENT_IDX] = null;
         fragments[Constants.HELP_FRAGMENT_IDX] = null;
 
+        floatingActionButton = (FloatingActionButton)findViewById(R.id.floating_action_button);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
 
         materialMenuDrawable = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.REGULAR);
-
-        scoreView = (TextView) toolbar.findViewById(R.id.scoreView);
         timeView = (TextView) toolbar.findViewById(R.id.timeView);
+        scoreView = (TextView) toolbar.findViewById(R.id.scoreView);
         comicButton = (ImageView) toolbar.findViewById(R.id.comicButton);
         comicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onFragmentInteraction(Constants.SWITCH_TO_COMICS_WITH_BACKSTACK,null);
+                onFragmentInteraction(Constants.SWITCH_TO_COMICS_WITH_BACKSTACK, null);
             }
         });
 
@@ -118,7 +128,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
     private void setNavigationDrawer() {
 
         mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
-        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener(){
+        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             public boolean isDrawerOpened;
 
             @Override
@@ -141,8 +151,8 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
 
             @Override
             public void onDrawerStateChanged(int newState) {
-                if(newState == DrawerLayout.STATE_IDLE) {
-                    if(isDrawerOpened) {
+                if (newState == DrawerLayout.STATE_IDLE) {
+                    if (isDrawerOpened) {
                         materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.ARROW);
                     } else {
                         materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.BURGER);
@@ -156,13 +166,13 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_app)).setDrawableResource(R.drawable.about_app));
         navigationDrawerMenuItems.add(new NavigationDrawerMenuItem().setTitle(getResources().getString(R.string.about_us)).setDrawableResource(R.drawable.about_bk2rl));
 
-        int groupTo[]= {R.id.navigation_drawer_menu_item_title_text,R.id.navigation_drawer_menu_item_image};
+        int groupTo[] = {R.id.navigation_drawer_menu_item_title_text, R.id.navigation_drawer_menu_item_image};
         int childTo[] = {R.id.navigation_drawer_menu_child_item_title_text, R.id.navigation_drawer_menu_child_item_password};
 
         drawerListView = (ExpandableListView) findViewById(R.id.navList);
         drawerListView.setGroupIndicator(null);
-        drawerListView.setAdapter(new NavigationDrawerListAdapter(this, navigationDrawerMenuItems, mCurrentQuest.getTaskList(),R.layout.navigation_drawer_menu_item_group_layout, groupTo,
-                R.layout.navigation_drawer_menu_item_child_layout,childTo));
+        drawerListView.setAdapter(new NavigationDrawerListAdapter(this, navigationDrawerMenuItems, mCurrentQuest.getTaskList(), R.layout.navigation_drawer_menu_item_group_layout, groupTo,
+                R.layout.navigation_drawer_menu_item_child_layout, childTo));
     }
 
     private void defaultLoad(QuestReader questReader) throws IOException {
@@ -187,7 +197,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
 
         } else {
 
-            onFragmentInteraction(Constants.SWITCH_TO_COMICS, null);
+            onFragmentInteraction(Constants.SWITCH_TO_HINT, null);
 
         }
     }
@@ -204,7 +214,7 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
             }
         }
 
-        onFragmentInteraction(Constants.SWITCH_TO_COMICS, null);
+        onFragmentInteraction(Constants.SWITCH_TO_HINT, null);
     }
 
     @Override
@@ -290,24 +300,29 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
                     fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
                 break;
+            case Constants.SWITCH_TO_HINT:
+                if (fragments[Constants.HINT_FRAGMENT_IDX] == null)
+                    fragments[Constants.HINT_FRAGMENT_IDX] = new HintFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.HINT_FRAGMENT_IDX]).commit();
+                break;
             case Constants.SWITCH_TO_COMICS_WITH_BACKSTACK:
                 if (fragments[Constants.COMICS_FRAGMENT_IDX] == null)
                     fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).addToBackStack(null).commit();
                 break;
             case Constants.START_TIMER:
-                if (timer != null){
+                if (timer != null) {
                     timer.interrupt();
                 }
                 timer = new Timer(this, mCurrentQuest.getStartTime(), mCurrentQuest.getDurationTime(), timeView);
                 timer.start();
                 break;
             case Constants.STOP_TIMER:
-                if (timer != null){
+                if (timer != null) {
                     timer.interrupt();
                     long timeLeft = mCurrentQuest.getDurationTime() -
                             (GregorianCalendar.getInstance().getTimeInMillis() - mCurrentQuest.getStartTime());
-                    mCurrentQuest.addScore((int)TimeUnit.MILLISECONDS.toMinutes(timeLeft));
+                    mCurrentQuest.addScore((int) TimeUnit.MILLISECONDS.toMinutes(timeLeft));
                     mCurrentQuest.setIsEnded(true);
                     timeView.setText(String.format("%d:%02d:%02d", 0, 0, 0));
                     scoreView.setText(String.valueOf(mCurrentQuest.getScore()));
@@ -316,17 +331,12 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         }
     }
 
-    public boolean onFragmentInteraction(int id){
-        switch (id){
+    public boolean onFragmentInteraction(int id) {
+        switch (id) {
             case Constants.CHANGE_FOOTER_TO_END_STATE:
                 if (fragments[Constants.QUEST_FRAGMENT_IDX] != null) {
-                    if (((QuestListFragment) fragments[Constants.QUEST_FRAGMENT_IDX]).getFooter() != null) {
                         mCurrentQuest.setIsEnded(true);
-                        ((QuestListFragment) fragments[Constants.QUEST_FRAGMENT_IDX]).changeFooterToEndState(mCurrentQuest.getEndText());
                         return true;
-                    } else {
-                        return false;
-                    }
                 } else {
                     return false;
                 }
@@ -334,19 +344,8 @@ public class MainActivity extends ActionBarActivity implements QuestListFragment
         return false;
     }
 
-
-    public boolean isFirstLoad() {
-        return firstLoad;
-    }
-
-    public Timer getTimer() {
-        return timer;
-    }
-
-    private boolean firstLoad;
-
-    public B2RDB getDB() {
-        return mDB;
+    public FloatingActionButton getFloatingActionButton() {
+        return floatingActionButton;
     }
 
     public ArrayList<Quest> getQuests() {

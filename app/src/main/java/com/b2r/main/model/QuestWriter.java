@@ -1,8 +1,10 @@
-package com.b2r.main;
+package com.b2r.main.model;
 
 
 import android.util.JsonWriter;
 import android.util.Log;
+
+import com.b2r.main.Constants;
 
 import java.io.IOException;
 import java.io.OutputStream;

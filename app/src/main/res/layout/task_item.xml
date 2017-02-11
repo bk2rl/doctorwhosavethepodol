@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/task_body"
-    android:layout_width="fill_parent"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:alpha="0.85"
-    android:background="#365196">
+    android:layout_margin="10dp"
+    card:elevation="1dp">
 
-    <TextView
-        android:id="@+id/task_item_head_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Task title"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/white"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp" />
+    <RelativeLayout
+        android:id="@+id/task_body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.85">
 
-    <TextView
-        android:id="@+id/task_item_secondary_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="This is short task about field"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="@android:color/white"
-        android:layout_below="@+id/task_item_head_text"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp" />
+        <TextView
+            android:id="@+id/task_item_head_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Task title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white" />
 
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/map"
-        android:id="@+id/map_button"
-        android:adjustViewBounds="false"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="5dp" />
+        <TextView
+            android:id="@+id/task_item_secondary_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/task_item_head_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="This is short task about field"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:textColor="@android:color/white" />
 
-
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/map_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:adjustViewBounds="false"
+            android:src="@drawable/map" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

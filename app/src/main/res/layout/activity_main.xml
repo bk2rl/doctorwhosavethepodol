@@ -1,5 +1,5 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -13,8 +13,18 @@
         <include
             android:id="@+id/top_tool_bar"
             layout="@layout/top_tool_bar"
-            android:layout_height = "?android:attr/actionBarSize"
-            android:layout_width="fill_parent" />
+            android:layout_width="fill_parent"
+            android:layout_height="?android:attr/actionBarSize" />
+
+        <android.support.design.widget.FloatingActionButton
+            fab:elevation="5dp"
+            android:id="@+id/floating_action_button"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <FrameLayout
             android:id="@+id/fragmentContainer"
@@ -28,14 +38,15 @@
     </RelativeLayout>
 
     <!-- The navigation drawer -->
+
     <RelativeLayout
         android:id="@+id/drawer_content"
         android:layout_width="300dp"
-        android:layout_marginTop="?android:attr/actionBarSize"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/blue_primary_dark"
+        android:layout_marginTop="?android:attr/actionBarSize"
         android:alpha="0.95"
+        android:background="@color/blue_primary_dark"
         android:orientation="vertical">
 
 
@@ -44,14 +55,14 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="@color/ultramarin"
-            android:padding="8dp" >
+            android:padding="8dp">
 
             <ImageView
                 android:id="@+id/avatar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/logo"
-                android:layout_marginTop="15dp" />
+                android:layout_marginTop="15dp"
+                android:src="@drawable/logo" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -59,7 +70,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
                 android:layout_toRightOf="@+id/avatar"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/userName"
@@ -84,11 +95,11 @@
 
         <!-- List of Actions (pages) -->
         <ExpandableListView
-            android:layout_marginLeft="10dp"
             android:id="@+id/navList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/profileBox"
+            android:layout_marginLeft="10dp"
             android:choiceMode="singleChoice" />
 
     </RelativeLayout>

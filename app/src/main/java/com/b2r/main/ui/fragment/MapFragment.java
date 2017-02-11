@@ -1,8 +1,7 @@
-package com.b2r.main;
+package com.b2r.main.ui.fragment;
 
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,12 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.b2r.main.Constants;
+import com.b2r.main.ui.activity.MainActivity;
+import com.b2r.main.R;
+import com.b2r.main.model.Task;
+
 import org.osmdroid.ResourceProxy;
-import org.osmdroid.tileprovider.IRegisterReceiver;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.tileprovider.tilesource.XYTileSource;
-import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.ResourceProxyImpl;
 import org.osmdroid.views.MapView;

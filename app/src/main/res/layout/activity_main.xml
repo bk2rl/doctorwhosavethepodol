@@ -1,5 +1,5 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,21 +10,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include
-            android:id="@+id/top_tool_bar"
-            layout="@layout/top_tool_bar"
-            android:layout_width="fill_parent"
-            android:layout_height="?android:attr/actionBarSize" />
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:id="@+id/app_bar_layout"
+            app:elevation="4dp">
+
+            <include
+                android:id="@+id/top_tool_bar"
+                layout="@layout/top_tool_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </android.support.design.widget.AppBarLayout>
 
         <android.support.design.widget.FloatingActionButton
-            fab:elevation="5dp"
             android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_marginRight="20dp"
+            app:elevation="5dp" />
 
         <FrameLayout
             android:id="@+id/fragmentContainer"
@@ -33,7 +41,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/top_tool_bar"
+            android:layout_below="@+id/app_bar_layout"
             android:background="@drawable/background" />
     </RelativeLayout>
 
@@ -57,11 +65,12 @@
             android:background="@color/ultramarin"
             android:padding="8dp">
 
-            <ImageView
+            <com.b2r.main.ui.view.HintImageView
                 android:id="@+id/avatar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="15dp"
+                app:hint="Very large hint"
                 android:src="@drawable/logo" />
 
             <LinearLayout

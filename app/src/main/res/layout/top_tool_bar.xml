@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:avatar="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/actionBarSize"
     android:layout_gravity="center_horizontal|top"
-    android:background="?attr/colorPrimary"
-    android:elevation="4dp">
+    android:background="?attr/colorPrimary">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:measureWithLargestChild="false">
 
-        <ImageView
+        <com.b2r.main.ui.view.HintImageView
             android:id="@+id/watchImg"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/watch" />
+            android:src="@drawable/watch"
+            app:hint="@string/watch_hint" />
 
         <TextView
             android:id="@+id/timeView"
-            android:layout_marginLeft="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="2dp"
             android:text="0:00:00"
             android:textColor="@android:color/white" />
 
-        <ImageView
+        <com.b2r.main.ui.view.HintImageView
             android:id="@+id/scoreImg"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="27dp"
             android:layout_marginStart="27dp"
-            android:src="@drawable/score" />
+            android:src="@drawable/score"
+            app:hint="@string/score_hint" />
 
         <TextView
             android:id="@+id/scoreView"
-            android:layout_marginLeft="2dp"
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="1"
             android:text="0"
             android:textColor="@android:color/white" />
 
@@ -51,12 +53,12 @@
             android:id="@+id/comicButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:adjustViewBounds="false"
             android:src="@drawable/comics"
-            android:textColor="@android:color/white"
-            android:adjustViewBounds="false" />
+            android:textColor="@android:color/white" />
 
 
     </LinearLayout>

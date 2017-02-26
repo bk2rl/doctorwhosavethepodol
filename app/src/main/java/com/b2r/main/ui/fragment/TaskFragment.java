@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.transition.Transition;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -57,11 +59,13 @@ public class TaskFragment extends Fragment {
         }
 
     }
+    
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View convertView = inflater.inflate(R.layout.task_layout, container, false);
+
         switch (mTask.getState()) {
             case ACTIVE:
                 convertView.setBackgroundColor(getResources().getColor(R.color.active));
@@ -99,7 +103,6 @@ public class TaskFragment extends Fragment {
 
         return convertView;
     }
-
 
     @Override
     public void onAttach(Activity activity) {

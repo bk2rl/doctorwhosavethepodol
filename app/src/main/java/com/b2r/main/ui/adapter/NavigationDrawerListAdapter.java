@@ -141,7 +141,7 @@ public class NavigationDrawerListAdapter extends BaseExpandableListAdapter {
 
             holder.pass.setText(stringBuffer.toString());
 
-            //change the background color of task in case of state
+            //change the background color of task_in in case of state
 
             switch (mTask.getState()) {
 //                    case ACTIVE:

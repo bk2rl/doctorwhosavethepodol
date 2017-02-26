@@ -21,4 +21,12 @@
     <string name="about_app">About Application</string>
     <string name="passwords">Passwords</string>
     <string name="about_us">About Us</string>
+    <string name="we_are_team">Мы - команда Back to Reality</string>
+    <string name="OK">OK</string>
+    <string name="about_us_text">Разрабатывает приложения для геймификации реальности</string>
+    <string name="uc_hint">Квест предоставлен урбанклаймом</string>
+    <string name="coop_hint">Совместное прохождение</string>
+    <string name="minimap_hint">Означает, что в квесте будут задания на карте</string>
+    <string name="watch_hint">Часы показывают, сколько осталось времени для прохождения квеста</string>
+    <string name="score_hint">Показывает, сколько очков вы набрали за прохождение</string>
 </resources>

@@ -255,6 +255,7 @@ public class Task {
         }
 
         public Task build() {
+            task.setTaskVisible(task.isTaskVisible);
             return task;
         }
 

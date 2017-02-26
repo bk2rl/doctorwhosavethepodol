@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TableRow>
 
-        <ImageView
+        <com.b2r.main.ui.view.HintImageView
             android:id="@+id/task_short_1"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/uc"
+            app:hint = "@string/uc_hint"
             />
 
-        <ImageView
+        <com.b2r.main.ui.view.HintImageView
             android:id="@+id/task_short_2"
             android:layout_width="18dp"
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
             android:layout_height="18dp"
-            android:src="@drawable/coop"/>
+            android:src="@drawable/coop"
+            app:hint = "@string/coop_hint"/>
 
-        <ImageView
+        <com.b2r.main.ui.view.HintImageView
             android:id="@+id/task_short_3"
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:src="@drawable/mini_map"/>
+            android:src="@drawable/mini_map"
+            app:hint="@string/minimap_hint"/>
     </TableRow>
 
 </TableLayout>

@@ -1,12 +1,16 @@
 package com.b2r.main.ui.activity;
 
+import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
     private ExpandableListView drawerListView;
     private MaterialMenuDrawable materialMenuDrawable;
     private boolean firstLoad;
-
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
 
         floatingActionButton = (FloatingActionButton)findViewById(R.id.floating_action_button);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
+        toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
 
         materialMenuDrawable = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.REGULAR);
         timeView = (TextView) toolbar.findViewById(R.id.timeView);
@@ -85,19 +89,10 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
         });
 
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+
         toolbar.setNavigationIcon(materialMenuDrawable);
 
-//        Log.d(Constants.DEBUG, "Main Activity onCreate db instance");
-//        mDB = new B2RDB(this);
-
         Log.d(Constants.DEBUG, "Main Activity onStart start");
-//        mDB.open();
         Log.d(Constants.DEBUG, "Checking for first load");
         File file = new File(getFilesDir(), "data.json");
         firstLoad = !file.exists();
@@ -128,15 +123,17 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
     private void setNavigationDrawer() {
 
         mDrawerLayout = (DrawerLayout) (findViewById(R.id.drawer_layout));
-        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             public boolean isDrawerOpened;
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                materialMenuDrawable.setTransformationOffset(
-                        MaterialMenuDrawable.AnimationState.BURGER_ARROW,
-                        isDrawerOpened ? 2 - slideOffset : slideOffset
-                );
+                if (getFragmentManager().getBackStackEntryCount() < 1) {
+                    materialMenuDrawable.setTransformationOffset(
+                            MaterialMenuDrawable.AnimationState.BURGER_ARROW,
+                            isDrawerOpened ? 2 - slideOffset : slideOffset
+                    );
+                }
             }
 
             @Override
@@ -155,7 +152,9 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
                     if (isDrawerOpened) {
                         materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.ARROW);
                     } else {
-                        materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.BURGER);
+                        if (getFragmentManager().getBackStackEntryCount() < 1) {
+                            materialMenuDrawable.setIconState(MaterialMenuDrawable.IconState.BURGER);
+                        }
                     }
                 }
             }
@@ -173,6 +172,30 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
         drawerListView.setGroupIndicator(null);
         drawerListView.setAdapter(new NavigationDrawerListAdapter(this, navigationDrawerMenuItems, mCurrentQuest.getTaskList(), R.layout.navigation_drawer_menu_item_group_layout, groupTo,
                 R.layout.navigation_drawer_menu_item_child_layout, childTo));
+
+        drawerListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
+                final AlertDialog.Builder builder;
+                switch (i) {
+                    case 1:
+                        builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle(getResources().getString(R.string.about_app));
+                        builder.setView(R.layout.about_app);
+                        builder.setPositiveButton(R.string.OK,null);
+                        builder.create().show();
+                        return true;
+                    case 2:
+                        builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle(getResources().getString(R.string.we_are_team));
+                        builder.setView(R.layout.about_us);
+                        builder.setPositiveButton(R.string.OK,null);
+                        builder.create().show();
+                        return true;
+                  }
+                return false;
+            }
+        });
     }
 
     private void defaultLoad(QuestReader questReader) throws IOException {
@@ -265,17 +288,23 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case android.R.id.home:
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.BURGER);
+                } else if (getFragmentManager().getBackStackEntryCount() > 1) {
+                    getFragmentManager().popBackStack();
+                } else if (getFragmentManager().getBackStackEntryCount() == 1){
+                    getFragmentManager().popBackStack();
+                    materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.BURGER);
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
+                }
+                return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
@@ -284,12 +313,14 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
             case Constants.SWITCH_TO_TASK:
                 int questPosition = args.getInt(Constants.QUEST_POSITION);
                 int taskPosition = args.getInt(Constants.TASK_POSITION);
-                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition, taskPosition)).addToBackStack(null).commit();
+                materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
+                getFragmentManager().beginTransaction().setCustomAnimations(R.animator.task_in,R.animator.quest_out,R.animator.quest_in,R.animator.task_out).replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition, taskPosition)).addToBackStack(null).commit();
                 break;
             case Constants.SWITCH_TO_MAP:
                 if (fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX] == null)
                     fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX] = new MapFragment();
                 fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX].setArguments(args);
+                materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX]).addToBackStack(null).commit();
                 break;
             case Constants.SWITCH_TO_LIST:
@@ -303,11 +334,13 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
             case Constants.SWITCH_TO_HINT:
                 if (fragments[Constants.HINT_FRAGMENT_IDX] == null)
                     fragments[Constants.HINT_FRAGMENT_IDX] = new HintFragment();
+                materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.HINT_FRAGMENT_IDX]).commit();
                 break;
             case Constants.SWITCH_TO_COMICS_WITH_BACKSTACK:
                 if (fragments[Constants.COMICS_FRAGMENT_IDX] == null)
                     fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
+                materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).addToBackStack(null).commit();
                 break;
             case Constants.START_TIMER:
@@ -355,6 +388,11 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
     public TextView getScoreView() {
         return scoreView;
     }
+
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
 
     public Quest getCurrentQuest() {
         return mCurrentQuest;

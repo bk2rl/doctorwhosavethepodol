@@ -53,7 +53,7 @@ public class HintFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mActivity = ((MainActivity) getActivity());
-        View returnView = inflater.inflate(R.layout.hint,container,false);
+        View returnView = inflater.inflate(R.layout.start_hint,container,false);
 
         mActivity.getSupportActionBar().hide();
 

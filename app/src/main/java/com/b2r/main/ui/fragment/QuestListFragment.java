@@ -61,7 +61,7 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
         mActivity = (MainActivity) getActivity();
         mAdapter = new QuestListAdapter(mActivity, mActivity.getQuests(),
                 R.layout.quest_item, new int[]{R.id.quest_item_head_text, R.id.quest_item_secondary_text, R.id.quest_title_image, R.id.task_list},
-                R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text, R.id.map_button});
+                R.layout.task_item, new int[]{R.id.task_item_head_text, R.id.task_item_secondary_text, R.id.map_button, R.id.hint});
 
         mActivity.getFloatingActionButton().setVisibility(View.VISIBLE);
         mActivity.getFloatingActionButton().setImageDrawable(getResources().getDrawable(R.drawable.key));

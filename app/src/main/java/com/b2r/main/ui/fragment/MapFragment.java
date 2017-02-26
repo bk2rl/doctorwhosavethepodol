@@ -118,6 +118,7 @@ public class MapFragment extends Fragment implements ItemizedIconOverlay.OnItemG
                 this, mResourceProxy);
 
         mPointsOverlay.setFocusItemsOnTap(true);
+
         if (centeredTask.isHasBindToMap()) {
             mPointsOverlay.setFocusedItem(centeredTask.getMapItem());
         }

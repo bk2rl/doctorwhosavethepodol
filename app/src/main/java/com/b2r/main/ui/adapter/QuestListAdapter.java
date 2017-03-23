@@ -53,7 +53,7 @@ public class QuestListAdapter extends RecyclerView.Adapter {
         ((ViewQuestHolder) holder).aboutQuest.setText(mQuest.getShortDescription());
         ((ViewQuestHolder) holder).questTitleImageView.setProgress(mQuest.getProgress());
 
-        ((ViewQuestHolder) holder).taskRecyclerView.setAdapter(new TaskListAdapter(mActivity,position,mQuest.getTaskList(),mChildLayout,mChildLayoutIds));
+        ((ViewQuestHolder) holder).taskRecyclerView.setAdapter(new TaskListAdapter(mActivity,position,mQuest.getTaskList(),mChildLayout,mChildLayoutIds,((ViewQuestHolder) holder).taskRecyclerView));
     }
 
 

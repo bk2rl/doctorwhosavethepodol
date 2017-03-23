@@ -8,5 +8,9 @@
     </declare-styleable>
     <declare-styleable name="HintImageView">
         <attr name="hint" format="string"/>
+        <attr name="hintWidth" format="dimension"/>
+        <attr name="hintHeight" format="dimension"/>
+        <attr name="hintVerticalPosition" format="enum"/>
+        <attr name="hintHorizontalAlign" format="enum"/>
     </declare-styleable>
 </resources>

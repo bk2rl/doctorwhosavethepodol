@@ -45,9 +45,12 @@ public class ComicsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mActivity = ((MainActivity) getActivity());
+        mActivity.getFloatingActionButton().hide();
+
         View returnView = inflater.inflate(R.layout.comics,container,false);
         Button button = (Button) returnView.findViewById(R.id.start_button);
         if (!mActivity.getCurrentQuest().isStarted()){
+            mActivity.getAppBarLayout().setVisibility(View.GONE);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -63,5 +66,10 @@ public class ComicsFragment extends Fragment {
         return returnView;
     }
 
-
+    @Override
+    public void onDestroyView() {
+        mActivity.getAppBarLayout().setVisibility(View.VISIBLE);
+        mActivity.getFloatingActionButton().show();
+        super.onDestroyView();
+    }
 }

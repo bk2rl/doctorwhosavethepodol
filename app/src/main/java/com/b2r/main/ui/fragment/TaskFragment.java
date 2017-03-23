@@ -6,9 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.transition.Transition;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -88,7 +86,7 @@ public class TaskFragment extends Fragment {
         ((TextView) convertView.findViewById(R.id.task_long_description)).setText(mTask.getLongDescription());
         InputStream bitmapStream = null;
         try {
-            bitmapStream = getResources().getAssets().open(String.format("help/%s", mTask.getImgSrc()));
+            bitmapStream = getResources().getAssets().open(String.format("hint/%s", mTask.getImgSrc()));
             Bitmap userImage = BitmapFactory.decodeStream(bitmapStream);
             ((ImageView) convertView.findViewById(R.id.help_image)).setImageBitmap(userImage);
         } catch (IOException ignored) {

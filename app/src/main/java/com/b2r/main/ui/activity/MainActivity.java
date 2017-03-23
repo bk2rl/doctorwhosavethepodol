@@ -1,13 +1,11 @@
 package com.b2r.main.ui.activity;
 
-import android.animation.ObjectAnimator;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +22,8 @@ import android.widget.TextView;
 import com.b2r.main.Constants;
 import com.b2r.main.model.NavigationDrawerMenuItem;
 import com.b2r.main.model.Quest;
+import com.b2r.main.ui.fragment.AboutAppFragment;
+import com.b2r.main.ui.fragment.AboutUsFragment;
 import com.b2r.main.ui.fragment.QuestListFragment;
 import com.b2r.main.model.QuestReader;
 import com.b2r.main.model.QuestWriter;
@@ -31,7 +31,7 @@ import com.b2r.main.R;
 import com.b2r.main.ui.Timer;
 import com.b2r.main.ui.adapter.NavigationDrawerListAdapter;
 import com.b2r.main.ui.fragment.ComicsFragment;
-import com.b2r.main.ui.fragment.HintFragment;
+import com.b2r.main.ui.fragment.HelpFragment;
 import com.b2r.main.ui.fragment.MapFragment;
 import com.b2r.main.ui.fragment.TaskFragment;
 import com.balysv.materialmenu.MaterialMenuDrawable;
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity implements QuestListFragment.OnFragmentInteractionListener, TaskFragment.OnFragmentInteractionListener,
-        ComicsFragment.OnFragmentInteractionListener, HintFragment.OnFragmentInteractionListener {
+        ComicsFragment.OnFragmentInteractionListener, HelpFragment.OnFragmentInteractionListener {
 
     private ArrayList<Quest> mQuests;
     private Timer timer = null;
@@ -60,22 +60,23 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
     private MaterialMenuDrawable materialMenuDrawable;
     private boolean firstLoad;
     private Toolbar toolbar;
+    private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.DEBUG, "Main Activity onCreate start");
         setContentView(R.layout.activity_main);
-        fragments = new Fragment[7];
+        fragments = new Fragment[10];
         fragments[Constants.QUEST_FRAGMENT_IDX] = QuestListFragment.newInstance();
         fragments[Constants.TASK_FRAGMENT_IDX] = null;
         fragments[Constants.MAP_FRAGMENT_IDX] = null;
         fragments[Constants.COMICS_FRAGMENT_IDX] = null;
         fragments[Constants.HELP_FRAGMENT_IDX] = null;
 
-        floatingActionButton = (FloatingActionButton)findViewById(R.id.floating_action_button);
-
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         toolbar = (Toolbar) findViewById(R.id.top_tool_bar);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
 
         materialMenuDrawable = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.REGULAR);
         timeView = (TextView) toolbar.findViewById(R.id.timeView);
@@ -85,6 +86,13 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
             @Override
             public void onClick(View v) {
                 onFragmentInteraction(Constants.SWITCH_TO_COMICS_WITH_BACKSTACK, null);
+            }
+        });
+
+        findViewById(R.id.helpButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFragmentInteraction(Constants.SWITCH_TO_HELP, null);
             }
         });
 
@@ -179,20 +187,12 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
                 final AlertDialog.Builder builder;
                 switch (i) {
                     case 1:
-                        builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle(getResources().getString(R.string.about_app));
-                        builder.setView(R.layout.about_app);
-                        builder.setPositiveButton(R.string.OK,null);
-                        builder.create().show();
+                        onFragmentInteraction(Constants.SWITCH_TO_ABOUT_APP, null);
                         return true;
                     case 2:
-                        builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle(getResources().getString(R.string.we_are_team));
-                        builder.setView(R.layout.about_us);
-                        builder.setPositiveButton(R.string.OK,null);
-                        builder.create().show();
+                        onFragmentInteraction(Constants.SWITCH_TO_ABOUT_US, null);
                         return true;
-                  }
+                }
                 return false;
             }
         });
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
 
         } else {
 
-            onFragmentInteraction(Constants.SWITCH_TO_HINT, null);
+            onFragmentInteraction(Constants.SWITCH_TO_COMICS, null);
 
         }
     }
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
             }
         }
 
-        onFragmentInteraction(Constants.SWITCH_TO_HINT, null);
+        onFragmentInteraction(Constants.SWITCH_TO_COMICS, null);
     }
 
     @Override
@@ -288,14 +288,14 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.BURGER);
                 } else if (getFragmentManager().getBackStackEntryCount() > 1) {
                     getFragmentManager().popBackStack();
-                } else if (getFragmentManager().getBackStackEntryCount() == 1){
+                } else if (getFragmentManager().getBackStackEntryCount() == 1) {
                     getFragmentManager().popBackStack();
                     materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.BURGER);
                 } else {
@@ -307,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
         return false;
     }
 
+
     @Override
     public void onFragmentInteraction(int id, Bundle args) {
         switch (id) {
@@ -314,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
                 int questPosition = args.getInt(Constants.QUEST_POSITION);
                 int taskPosition = args.getInt(Constants.TASK_POSITION);
                 materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
-                getFragmentManager().beginTransaction().setCustomAnimations(R.animator.task_in,R.animator.quest_out,R.animator.quest_in,R.animator.task_out).replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition, taskPosition)).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.animator.task_in, R.animator.quest_out, R.animator.quest_in, R.animator.task_out).replace(R.id.fragmentContainer, TaskFragment.newInstance(questPosition, taskPosition)).addToBackStack(null).commit();
                 break;
             case Constants.SWITCH_TO_MAP:
                 if (fragments[com.b2r.main.Constants.MAP_FRAGMENT_IDX] == null)
@@ -331,17 +332,27 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
                     fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).commit();
                 break;
-            case Constants.SWITCH_TO_HINT:
+            case Constants.SWITCH_TO_HELP:
                 if (fragments[Constants.HINT_FRAGMENT_IDX] == null)
-                    fragments[Constants.HINT_FRAGMENT_IDX] = new HintFragment();
+                    fragments[Constants.HINT_FRAGMENT_IDX] = new HelpFragment();
                 materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
-                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.HINT_FRAGMENT_IDX]).commit();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.HINT_FRAGMENT_IDX]).addToBackStack(null).commit();
                 break;
             case Constants.SWITCH_TO_COMICS_WITH_BACKSTACK:
                 if (fragments[Constants.COMICS_FRAGMENT_IDX] == null)
                     fragments[Constants.COMICS_FRAGMENT_IDX] = new ComicsFragment();
                 materialMenuDrawable.animateIconState(MaterialMenuDrawable.IconState.ARROW);
                 getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.COMICS_FRAGMENT_IDX]).addToBackStack(null).commit();
+                break;
+            case Constants.SWITCH_TO_ABOUT_APP:
+                if (fragments[Constants.SWITCH_TO_ABOUT_APP] == null)
+                    fragments[Constants.SWITCH_TO_ABOUT_APP] = AboutAppFragment.newInstance();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.SWITCH_TO_ABOUT_APP]).addToBackStack(null).commit();
+                break;
+            case Constants.SWITCH_TO_ABOUT_US:
+                if (fragments[Constants.SWITCH_TO_ABOUT_US] == null)
+                    fragments[Constants.SWITCH_TO_ABOUT_US] = AboutUsFragment.newInstance();
+                getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragments[Constants.SWITCH_TO_ABOUT_US]).addToBackStack(null).commit();
                 break;
             case Constants.START_TIMER:
                 if (timer != null) {
@@ -368,8 +379,8 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
         switch (id) {
             case Constants.CHANGE_FOOTER_TO_END_STATE:
                 if (fragments[Constants.QUEST_FRAGMENT_IDX] != null) {
-                        mCurrentQuest.setIsEnded(true);
-                        return true;
+                    mCurrentQuest.setIsEnded(true);
+                    return true;
                 } else {
                     return false;
                 }
@@ -379,6 +390,10 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
 
     public FloatingActionButton getFloatingActionButton() {
         return floatingActionButton;
+    }
+
+    public AppBarLayout getAppBarLayout() {
+        return appBarLayout;
     }
 
     public ArrayList<Quest> getQuests() {
@@ -393,8 +408,16 @@ public class MainActivity extends AppCompatActivity implements QuestListFragment
         return toolbar;
     }
 
+    public MaterialMenuDrawable getMaterialMenuDrawable() {
+        return materialMenuDrawable;
+    }
 
     public Quest getCurrentQuest() {
         return mCurrentQuest;
     }
+
+    public DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
+    }
+
 }

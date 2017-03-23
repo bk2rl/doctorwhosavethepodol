@@ -24,16 +24,26 @@ import java.io.InputStream;
 
 public class QuestTitleImageView extends android.widget.ImageView {
 
+    private int progressBarWidth;
     private int strokeFirstColor;
     private int strokeSecondColor;
     private int strokeWidth;
     private String backgroundImage;
     private ShapeDrawable backgroundDrawable;
     private ShapeDrawable progressBarDrawable;
+    private ShapeDrawable sphereDrawable;
     private RectF progressRectangle;
     private int sweepAngle;
     private Paint secondPaint;
     private BitmapShader backgroundShader;
+    private final int sphereWidth = 10;
+    private int spherePadding;
+    private int pad;
+    private int backgroundWidth;
+    private float sinX;
+    private float cosY;
+    private int x;
+    private int y;
 
 
     public QuestTitleImageView(Context context, AttributeSet attrs) {
@@ -44,6 +54,7 @@ public class QuestTitleImageView extends android.widget.ImageView {
         progressBarDrawable.getPaint().setColor(strokeFirstColor);
         secondPaint = new Paint();
         secondPaint.setColor(strokeSecondColor);
+        sphereDrawable = new ShapeDrawable(new OvalShape());
         sweepAngle = 0;
     }
 
@@ -73,22 +84,46 @@ public class QuestTitleImageView extends android.widget.ImageView {
     //call after view is layouted
     private void prepareDrawables() {
         InputStream bitmapStream = null;
+
+        if (spherePadding == 0) {
+            spherePadding = (sphereWidth - strokeWidth) / 2;
+        }
+
+        if (progressBarWidth == 0) {
+            progressBarWidth = getWidth() - 2 * spherePadding;
+        }
+
+        if (backgroundWidth == 0) {
+            backgroundWidth = progressBarWidth - 2 * strokeWidth;
+        }
+
         try {
             if (backgroundShader == null) {
                 bitmapStream = getResources().getAssets().open(String.format("user/%s", backgroundImage));
                 Bitmap userImage = BitmapFactory.decodeStream(bitmapStream);
-                userImage = Bitmap.createScaledBitmap(userImage, getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth, false);
+                userImage = Bitmap.createScaledBitmap(userImage, backgroundWidth, backgroundWidth, false);
 //                userImage = Bitmap.createScaledBitmap(userImage, getWidth(), getHeight(), false);
                 backgroundShader = new BitmapShader(userImage, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             }
 
+            progressBarDrawable.getShape().resize(progressBarWidth, progressBarWidth);
+            progressBarDrawable.setBounds(spherePadding, spherePadding, spherePadding + progressBarWidth, spherePadding + progressBarWidth);
+
             backgroundDrawable.getPaint().setShader(backgroundShader);
-            backgroundDrawable.getShape().resize(getWidth() - 2 * strokeWidth, getHeight() - 2 * strokeWidth);
-            backgroundDrawable.setBounds(strokeWidth, strokeWidth, getWidth() - strokeWidth, getHeight() - strokeWidth);
+            backgroundDrawable.getShape().resize(backgroundWidth, backgroundWidth);
+            backgroundDrawable.setBounds(strokeWidth + spherePadding, strokeWidth + spherePadding,  strokeWidth + spherePadding + backgroundWidth, strokeWidth + spherePadding + backgroundWidth);
 
-            progressBarDrawable.getShape().resize(getWidth(), getHeight());
+            sphereDrawable.getShape().resize(sphereWidth,sphereWidth);
+            sphereDrawable.getPaint().setColor(strokeSecondColor);
 
-            progressRectangle = new RectF(0, 0, getWidth(), getHeight());
+//            progressRectangle = new RectF(progressBarDrawable.getBounds());
+              progressRectangle = new RectF(spherePadding,spherePadding,spherePadding+progressBarWidth,spherePadding+progressBarWidth);
+
+            pad = getWidth() / 2;
+            sinX = (float) ((progressBarWidth - strokeWidth) / 2 * Math.sin(sweepAngle));
+            cosY = - (float) ((progressBarWidth - strokeWidth) / 2 * Math.cos(sweepAngle));
+            x = Math.round(sinX + pad);
+            y = Math.round(cosY + pad);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,14 +140,22 @@ public class QuestTitleImageView extends android.widget.ImageView {
 
     public void setProgress(int progress){
         sweepAngle = progress;
+        sinX = (float) ((progressBarWidth - strokeWidth) / 2 * Math.sin(sweepAngle));
+        cosY = - (float) ((progressBarWidth - strokeWidth) / 2 * Math.cos(sweepAngle));
+        x = Math.round(sinX + pad);
+        y = Math.round(cosY + pad);
         invalidate();
     }
 
     @Override
     public void onDraw(@NonNull Canvas canvas) {
+        sphereDrawable.setBounds(x -sphereWidth/2, y -sphereWidth/2, x +sphereWidth/2, y +sphereWidth/2);
         progressBarDrawable.draw(canvas);
         canvas.drawArc(progressRectangle, -90, sweepAngle, true, secondPaint);
+//        canvas.drawCircle(,,5,secondPaint);
+        backgroundDrawable.setBounds(strokeWidth + spherePadding, strokeWidth + spherePadding,  strokeWidth + spherePadding + backgroundWidth, strokeWidth + spherePadding + backgroundWidth);
         backgroundDrawable.draw(canvas);
+        sphereDrawable.draw(canvas);
     }
 
 }

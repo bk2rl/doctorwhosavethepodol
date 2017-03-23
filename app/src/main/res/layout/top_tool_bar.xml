@@ -50,6 +50,17 @@
             android:textColor="@android:color/white" />
 
         <ImageView
+            android:id="@+id/helpButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:adjustViewBounds="false"
+            android:src="@drawable/ic_help_outline_white_36dp"
+            android:textColor="@android:color/white" />
+
+        <ImageView
             android:id="@+id/comicButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
@@ -59,7 +70,6 @@
             android:adjustViewBounds="false"
             android:src="@drawable/comics"
             android:textColor="@android:color/white" />
-
 
     </LinearLayout>
 

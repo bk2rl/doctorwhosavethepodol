@@ -10,17 +10,14 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.b2r.main.Constants;
 import com.b2r.main.ui.activity.MainActivity;
 import com.b2r.main.R;
 import com.b2r.main.ui.adapter.ImageViewPageAdapter;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
-public class HintFragment extends Fragment {
+public class HelpFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
@@ -29,7 +26,7 @@ public class HintFragment extends Fragment {
     private ViewPager hintPager;
     private TabLayout tabLayout;
 
-    public HintFragment() {
+    public HelpFragment() {
         // Required empty public constructor
     }
 
@@ -53,9 +50,9 @@ public class HintFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mActivity = ((MainActivity) getActivity());
-        View returnView = inflater.inflate(R.layout.start_hint,container,false);
+        View returnView = inflater.inflate(R.layout.help_fragment,container,false);
 
-        mActivity.getSupportActionBar().hide();
+        mActivity.getFloatingActionButton().hide();
 
         hints = new ArrayList<Drawable>();
         hints.add(mActivity.getResources().getDrawable(R.drawable.dw_uc_comics_01));
@@ -67,26 +64,26 @@ public class HintFragment extends Fragment {
         tabLayout.setupWithViewPager(hintPager);
         hintPager.setAdapter(new ImageViewPageAdapter(getActivity(), hints));
 
-        Button button = (Button) returnView.findViewById(R.id.start_button);
-        if (!mActivity.getCurrentQuest().isStarted()){
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mActivity.getCurrentQuest().setQuestStarted(true);
-                    mActivity.getCurrentQuest().setStartTime(GregorianCalendar.getInstance().getTimeInMillis());
-                    mListener.onFragmentInteraction(Constants.START_TIMER, null);
-                    mListener.onFragmentInteraction(Constants.SWITCH_TO_LIST,null);
-                }
-            });
-        } else {
-            button.setVisibility(View.GONE);
-        }
+//        Button button = (Button) returnView.findViewById(R.id.start_button);
+//        if (!mActivity.getCurrentQuest().isStarted()){
+//            button.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mActivity.getCurrentQuest().setQuestStarted(true);
+//                    mActivity.getCurrentQuest().setStartTime(GregorianCalendar.getInstance().getTimeInMillis());
+//                    mListener.onFragmentInteraction(Constants.START_TIMER, null);
+//                    mListener.onFragmentInteraction(Constants.SWITCH_TO_LIST,null);
+//                }
+//            });
+//        } else {
+//            button.setVisibility(View.GONE);
+//        }
         return returnView;
     }
 
     @Override
     public void onDestroyView() {
-        mActivity.getSupportActionBar().show();
+        mActivity.getFloatingActionButton().show();
         super.onDestroyView();
     }
 }

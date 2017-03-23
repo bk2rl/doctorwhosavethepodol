@@ -19,6 +19,8 @@ public class Constants {
     public final static String QUEST_POSITION = "quest_position";
     public final static String TASK_POSITION = "task_position";
     public final static String DEBUG = "b2r_debug";
-    public static final int SWITCH_TO_HINT = 7;
+    public static final int SWITCH_TO_HELP = 7;
+    public static final int SWITCH_TO_ABOUT_APP = 8;
+    public static final int SWITCH_TO_ABOUT_US = 9;
     public static final int HINT_FRAGMENT_IDX = 6;
 }

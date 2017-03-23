@@ -15,4 +15,12 @@
     <string name="urban_climbing_quest">Група Urban Climbing Quest в Facebook</string>
     <string name="watch_hint">Квест розраховано на 4 години. Зекономлений час перераховується у додаткові бали. Поспішайте, проте будьте обережні на висоті!</string>
     <string name="we_are_team">Ми - команда Back To Reality</string>
+    <string name="bronze_key_was_already_putted">Бронзовий ключ вже було введено</string>
+    <string name="enter_password">Введіть пароль</string>
+    <string name="gold_key_was_already_putted">Золотий ключ було введено</string>
+    <string name="no">Ні</string>
+    <string name="passed_key_was_already_putted">Ключ пропуска вже було введено</string>
+    <string name="password">Пароль</string>
+    <string name="silver_key_was_already_putted">Срібний ключ вже був введений</string>
+    <string name="yes">Так</string>
 </resources>

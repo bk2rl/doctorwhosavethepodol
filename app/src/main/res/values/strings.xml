@@ -30,4 +30,12 @@
     <string name="urban_climbing_quest">Urban Climbing Quest Club in Facebook</string>
     <string name="watch_hint">Quest is designed for 4 hours. The saved time is recalculated into additional points. Hurry, but be careful at the height!</string>
     <string name="we_are_team">We are Back to Reality team</string>
+    <string name="password">Password</string>
+    <string name="enter_password">Enter password</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="passed_key_was_already_putted">Passed key was already putted</string>
+    <string name="bronze_key_was_already_putted">Bronze key was already putted</string>
+    <string name="silver_key_was_already_putted">Silver key was already putted</string>
+    <string name="gold_key_was_already_putted">Gold key was already putted</string>
 </resources>

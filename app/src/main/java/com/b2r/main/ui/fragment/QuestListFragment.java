@@ -122,8 +122,8 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
         if (v.getId() == R.id.floating_action_button) {
             if (!mActivity.getCurrentQuest().isEnded()) {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                alertDialog.setTitle("PASSWORD");
-                alertDialog.setMessage("Enter Password");
+                alertDialog.setTitle(R.string.password);
+                alertDialog.setMessage(R.string.enter_password);
                 pskInput = new EditText(getActivity());
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -131,7 +131,7 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                 pskInput.setLayoutParams(lp);
                 alertDialog.setView(pskInput);
                 alertDialog.setIcon(R.drawable.blue_key);
-                alertDialog.setPositiveButton("YES", this).setNegativeButton("NO", this);
+                alertDialog.setPositiveButton(R.string.yes, this).setNegativeButton(R.string.no, this);
                 alertDialog.show();
             }
         }
@@ -155,7 +155,7 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                         if (mTask.getState() == Task.State.ACTIVE) {
                             updateQuest(Task.State.PASSED, mQuest, mTask, taskCount);
                         } else {
-                            showToastMessage("Passed key was already putted");
+                            showToastMessage(getString(R.string.passed_key_was_already_putted));
                         }
                     } else if (mTask.getPsksUnlock().contains(password)) {
                         mTask.setTaskVisible(true);
@@ -164,19 +164,19 @@ public class QuestListFragment extends Fragment implements View.OnClickListener,
                         if (mTask.getState() == Task.State.ACTIVE) {
                             updateQuest(Task.State.BRONZE, mQuest, mTask, taskCount);
                         } else {
-                            showToastMessage("Bronze key was already putted");
+                            showToastMessage(getString(R.string.bronze_key_was_already_putted));
                         }
                     } else if (mTask.getPskSilver().equals(password)) {
                         if (mTask.getState() == Task.State.ACTIVE) {
                             updateQuest(Task.State.SILVER, mQuest, mTask, taskCount);
                         } else {
-                            showToastMessage("Silver key was already putted");
+                            showToastMessage(getString(R.string.silver_key_was_already_putted));
                         }
                     } else if (mTask.getPskGold().equals(password)) {
                         if (mTask.getState() == Task.State.ACTIVE) {
                             updateQuest(Task.State.GOLD, mQuest, mTask, taskCount);
                         } else {
-                            showToastMessage("Gold key was already putted");
+                            showToastMessage(getString(R.string.gold_key_was_already_putted));
                         }
                     }
                 }

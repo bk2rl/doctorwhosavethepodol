@@ -1,13 +1,8 @@
-Мобильное приложение, которое позволяет пройти квест в стиле Доктора Кто на Подоле.
+The Doctor has gone missing. Last time his TARDIS was seen getting down over the city of Kiev in 2015, being shot a mysterious sort of weapon. At the same time, anomalies began to emerge all over the city centre threatening locals there. The only hope left for saving Kiev is to find Doctor and, if needed, rescue him. Teams of brave urban climbers stand ready to fulfil their mission of bringing peace to their city.
 
-Лист заданий:
-![device-2016-06-07-133526.png](https://bitbucket.org/repo/n5rkd7/images/4180566283-device-2016-06-07-133526.png)
-
-Карта с заданиями (новые задания появляются по мере прохождения):
-![device-2016-06-07-133551.jpg](https://bitbucket.org/repo/n5rkd7/images/2861389899-device-2016-06-07-133551.jpg)
-
-Пример развёрнутого пройденого задания:
-![device-2016-06-07-133622.png](https://bitbucket.org/repo/n5rkd7/images/3210354978-device-2016-06-07-133622.png)
-
-Пример развёрнутого не пройденого задания:
-![device-2016-06-07-133933.png](https://bitbucket.org/repo/n5rkd7/images/1910534813-device-2016-06-07-133933.png)
+![alt tag](./screenshots/device-2017-03-23-183107.png)
+![alt tag](./screenshots/device-2017-03-23-183125.png)
+![alt tag](./screenshots/device-2017-03-23-183138.png)
+![alt tag](./screenshots/device-2017-03-23-183216.png)
+![alt tag](./screenshots/device-2017-03-25-164106.png)
+![alt tag](./screenshots/device-2017-03-25-164116.png)
